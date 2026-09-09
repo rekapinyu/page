@@ -26,16 +26,31 @@ main{flex:1;padding:32px;overflow-y:auto}
 .stat-card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.03)}
 .stat-card small{color:#64748b;font-size:11px;font-weight:800;text-transform:uppercase}
 .stat-card h2{font-size:32px;margin-top:8px;font-weight:900}
-.table-card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,0.03)}
-table{width:100%;border-collapse:collapse;text-align:left}
-th{padding:12px 16px;font-size:12px;font-weight:800;color:#64748b;border-bottom:1px solid #e2e8f0}
-td{padding:16px;font-size:14px;border-bottom:1px solid #f1f5f9}
-.btn-approve{background:#16a34a;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;transition:.2s}
-.btn-approve:hover{background:#15803d}
+
+/* Tampilan Kartu Notifikasi */
+.notifications-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.notif-card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.03);display:flex;flex-direction:column;justify-content:space-between;gap:16px;position:relative}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid #f1f5f9;padding-bottom:12px}
+.card-time{font-size:12px;color:#94a3b8;font-weight:600}
 .badge-status{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800}
 .status-WAITING{background:#fef3c7;color:#d97706}
 .status-APPROVED{background:#dcfce7;color:#15803d}
-.empty-state{text-align:center;padding:40px;color:#94a3b8;font-size:14px}
+.status-REJECTED{background:#fee2e2;color:#dc2626}
+
+.card-body{display:grid;gap:10px}
+.info-group{display:flex;flex-direction:column}
+.info-label{font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;margin-bottom:2px}
+.info-value{font-size:15px;font-weight:700;color:#0f172a}
+.info-value-highlight{color:#2563eb}
+
+.card-actions{display:flex;gap:10px;margin-top:8px}
+.btn-action{flex:1;padding:10px;border-radius:10px;font-weight:700;font-size:13px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s}
+.btn-approve{background:#16a34a;color:#fff}
+.btn-approve:hover{background:#15803d}
+.btn-reject{background:#ef4444;color:#fff}
+.btn-reject:hover{background:#b91c1c}
+
+.empty-state{grid-column:1/-1;text-align:center;padding:60px;color:#94a3b8;font-size:15px;background:#fff;border-radius:20px;border:1px dashed #cbd5e1}
 </style>
 </head>
 <body>
@@ -70,27 +85,12 @@ td{padding:16px;font-size:14px;border-bottom:1px solid #f1f5f9}
   <div class="stats-grid">
     <div class="stat-card"><small>Menunggu</small><h2 id="cntWaiting">0</h2></div>
     <div class="stat-card"><small>Dikonfirmasi</small><h2 id="cntApproved">0</h2></div>
-    <div class="stat-card"><small>Ditolak</small><h2>0</h2></div>
+    <div class="stat-card"><small>Ditolak</small><h2 id="cntRejected">0</h2></div>
     <div class="stat-card"><small>Total</small><h2 id="cntTotal">0</h2></div>
   </div>
 
-  <div class="table-card">
-    <table id="paymentTable">
-      <thead>
-        <tr>
-          <th>TANGGAL</th>
-          <th>NAMA TOKO</th>
-          <th>PEMILIK</th>
-          <th>PAKET</th>
-          <th>NOMINAL</th>
-          <th>STATUS</th>
-          <th>AKSI</th>
-        </tr>
-      </thead>
-      <tbody id="paymentTbody">
-        <tr><td colspan="7" class="empty-state">Belum ada riwayat notifikasi pembayaran.</td></tr>
-      </tbody>
-    </table>
+  <div class="notifications-grid" id="notificationsContainer">
+    <div class="empty-state">Belum ada riwayat notifikasi pembayaran.</div>
   </div>
 </main>
 
@@ -99,79 +99,107 @@ const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('
 
 function loadTransactions(){
   const data = JSON.parse(localStorage.getItem('rekapinyu_transactions') || '[]');
-  renderTable(data);
+  renderCards(data);
 }
 
-function renderTable(list){
-  const tbody = document.getElementById('paymentTbody');
+function renderCards(list){
+  const container = document.getElementById('notificationsContainer');
   if(!list || list.length === 0){
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Belum ada riwayat notifikasi pembayaran.</td></tr>';
-    updateStats(0,0,0);
+    container.innerHTML = '<div class="empty-state">Belum ada riwayat notifikasi pembayaran.</div>';
+    updateStats(0,0,0,0);
     return;
   }
 
   let waiting = 0;
   let approved = 0;
+  let rejected = 0;
 
   let html = '';
   list.forEach(item => {
     if(item.status === 'MENUNGGU') waiting++;
     if(item.status === 'DIKONFIRMASI') approved++;
+    if(item.status === 'DITOLAK') rejected++;
 
     const isWaiting = item.status === 'MENUNGGU';
-    const statusBadge = isWaiting 
-      ? '<span class="badge-status status-WAITING">MENUNGGU</span>' 
-      : '<span class="badge-status status-APPROVED">DIKONFIRMASI</span>';
+    let statusBadge = '<span class="badge-status status-WAITING">MENUNGGU</span>';
+    if(item.status === 'DIKONFIRMASI') statusBadge = '<span class="badge-status status-APPROVED">DIKONFIRMASI</span>';
+    if(item.status === 'DITOLAK') statusBadge = '<span class="badge-status status-REJECTED">DITOLAK</span>';
 
-    const actionBtn = isWaiting 
-      ? `<button class="btn-approve" onclick="approveTx('${item.id}')"><i class="fa-solid fa-check"></i> Konfirmasi</button>` 
-      : '<span style="color:#16a34a;font-weight:700;font-size:12px;"><i class="fa-solid fa-circle-check"></i> Aktif</span>';
+    const actionButtons = isWaiting 
+      ? `<div class="card-actions">
+          <button class="btn-action btn-approve" onclick="approveTx('${item.id}')"><i class="fa-solid fa-check"></i> Aktifkan Paket</button>
+          <button class="btn-action btn-reject" onclick="rejectTx('${item.id}')"><i class="fa-solid fa-xmark"></i> Batalkan Paket</button>
+         </div>`
+      : `<div style="text-align:center;padding:8px;font-size:12px;font-weight:700;color:${item.status === 'DIKONFIRMASI' ? '#16a34a' : '#ef4444'};">
+          <i class="fa-solid ${item.status === 'DIKONFIRMASI' ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> 
+          ${item.status === 'DIKONFIRMASI' ? 'Paket Telah Diaktifkan' : 'Paket Dibatalkan'}
+         </div>`;
 
     html += `
-      <tr>
-        <td>${new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-        <td><strong>${item.storeName}</strong></td>
-        <td>${item.ownerName}</td>
-        <td>${item.packageName} (${item.duration})</td>
-        <td>${item.amount}</td>
-        <td>${statusBadge}</td>
-        <td>${actionBtn}</td>
-      </tr>
+      <div class="notif-card">
+        <div class="card-header">
+          <span class="card-time"><i class="fa-regular fa-clock"></i> ${new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          ${statusBadge}
+        </div>
+        <div class="card-body">
+          <div class="info-group">
+            <span class="info-label">Nama Toko</span>
+            <span class="info-value">${item.storeName || '-'}</span>
+          </div>
+          <div class="info-group">
+            <span class="info-label">Nama Pembeli</span>
+            <span class="info-value">${item.ownerName || '-'}</span>
+          </div>
+          <div class="info-group">
+            <span class="info-label">Nama Paket Yg Dibeli</span>
+            <span class="info-value info-value-highlight">${item.packageName || '-'} (${item.duration || '-'}) — ${item.amount || '-'}</span>
+          </div>
+        </div>
+        ${actionButtons}
+      </div>
     `;
   });
 
-  tbody.innerHTML = html;
-  updateStats(waiting, approved, list.length);
+  container.innerHTML = html;
+  updateStats(waiting, approved, rejected, list.length);
 }
 
-function updateStats(waiting, approved, total){
+function updateStats(waiting, approved, rejected, total){
   document.getElementById('cntWaiting').textContent = waiting;
   document.getElementById('badgeWaitCount').textContent = waiting;
   document.getElementById('cntApproved').textContent = approved;
+  document.getElementById('cntRejected').textContent = rejected;
   document.getElementById('cntTotal').textContent = total;
 }
 
 function approveTx(id){
+  updateTxStatus(id, 'DIKONFIRMASI');
+}
+
+function rejectTx(id){
+  updateTxStatus(id, 'DITOLAK');
+}
+
+function updateTxStatus(id, newStatus){
   let list = JSON.parse(localStorage.getItem('rekapinyu_transactions') || '[]');
   list = list.map(item => {
     if(item.id === id){
-      item.status = 'DIKONFIRMASI';
+      item.status = newStatus;
     }
     return item;
   });
   localStorage.setItem('rekapinyu_transactions', JSON.stringify(list));
 
-  // Kirim balik konfirmasi realtime ke tab/layar pembeli
-  const payload = { id: id, status: 'DIKONFIRMASI' };
+  const payload = { id: id, status: newStatus };
   if(channel){
-    channel.postMessage({ type: 'STATUS_UPDATE', id: id, status: 'DIKONFIRMASI' });
+    channel.postMessage({ type: 'STATUS_UPDATE', id: id, status: newStatus });
   }
   localStorage.setItem('rekapinyu_status_update', JSON.stringify(payload));
 
-  renderTable(list);
+  renderCards(list);
 }
 
-// MenerimaNotifikasi Baru dari Landing Page secara Realtime
+// Menerima Notifikasi Baru dari Landing Page secara Realtime
 if(channel){
   channel.onmessage = function(e){
     if(e.data && e.data.type === 'NEW_PAYMENT'){
