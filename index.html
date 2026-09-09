@@ -89,6 +89,10 @@
 const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')}),{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 
+// Saluran Realtime
+const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('rekapinyu_payment_channel') : null;
+let currentTxId = null;
+
 function openBuyModal(packageName,duration,amount,action){
   document.getElementById('mainContent').style.display = 'none';
   const checkoutSection = document.getElementById('checkoutSection');
@@ -110,15 +114,64 @@ function closeBuyModal(){
 function submitBuy(e){
   e.preventDefault();
 
-  // Tampilkan Popup Diproses (Tidak Bisa Ditutup)
+  const storeName = document.getElementById('storeName').value;
+  const ownerName = document.getElementById('ownerName').value;
+  const packageName = document.getElementById('packageName').value;
+  const duration = document.getElementById('packageDuration').value;
+  const amountText = document.getElementById('paymentAmount').textContent;
+
+  currentTxId = 'TX-' + Date.now();
+
+  const newTransaction = {
+    id: currentTxId,
+    storeName: storeName,
+    ownerName: ownerName,
+    packageName: packageName,
+    duration: duration,
+    amount: amountText,
+    status: 'MENUNGGU',
+    timestamp: new Date().toISOString()
+  };
+
+  // 1. Simpan ke LocalStorage
+  let history = JSON.parse(localStorage.getItem('rekapinyu_transactions') || '[]');
+  history.unshift(newTransaction);
+  localStorage.setItem('rekapinyu_transactions', JSON.stringify(history));
+
+  // 2. Kirim pesan realtime via BroadcastChannel jika ada
+  if(channel){
+    channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
+  }
+
+  // Tampilkan Popup Diproses
   document.getElementById('statusModalOverlay').classList.add('show');
 }
 
-// Fungsi helper yang dapat dipanggil oleh sistem/backend superadmin untuk mengaktifkan paket
+// Menerima update konfirmasi dari Superadmin secara realtime
+if(channel){
+  channel.onmessage = function(e){
+    if(e.data && e.data.type === 'STATUS_UPDATE'){
+      if(e.data.id === currentTxId && e.data.status === 'DIKONFIRMASI'){
+        setPackageActive();
+      }
+    }
+  };
+}
+
+// Listener cadangan melalui LocalStorage event
+window.addEventListener('storage', function(e){
+  if(e.key === 'rekapinyu_status_update' && e.newValue){
+    const updated = JSON.parse(e.newValue);
+    if(updated.id === currentTxId && updated.status === 'DIKONFIRMASI'){
+      setPackageActive();
+    }
+  }
+});
+
 function setPackageActive(){
   document.getElementById('statusSpinner').style.display = 'none';
   document.getElementById('statusActiveIcon').style.display = 'grid';
-  document.getElementById('statusTitle').textContent = 'paket sudah aktif';
+  document.getElementById('statusTitle').textContent = 'Paket sudah aktif';
   document.getElementById('statusDesc').textContent = 'Selamat! Paket Anda telah berhasil diaktifkan. Silakan masuk ke aplikasi.';
   document.getElementById('statusActionArea').style.display = 'block';
 }
