@@ -15,7 +15,7 @@
 
 .checkout-section{display:none;padding:60px 0 92px;background:#eef6ff}.checkout-section.show{display:block}.checkout-card{background:#fff;border-radius:24px;border:1px solid #dfeaf5;box-shadow:0 20px 50px #10233f15;padding:36px;margin-top:20px}.checkout-header{margin-bottom:25px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eef2f7;padding-bottom:15px}.checkout-header h3{font-size:24px;color:#10233f}.btn-back{background:#f1f5f9;color:#475569;border:0;padding:8px 16px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s}.btn-back:hover{background:#e2e8f0}.checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}.checkout-left{display:grid;gap:14px}.checkout-left label{font-size:12px;font-weight:800;color:#52647d}.checkout-left input,.checkout-left select{width:100%;padding:12px 13px;border:1px solid #d8e3ee;border-radius:12px;outline:none;font:inherit}.checkout-left input:focus,.checkout-left select:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb14}.checkout-left select:disabled{background:#f1f5f9;color:#64748b;cursor:not-allowed}.checkout-right{background:#f8fafc;border:1px solid #e2e8f0;border-radius:20px;padding:24px;text-align:center}.qris-note{margin:10px 0;padding:14px;border-radius:16px;background:#f0fdf9;color:#315b55;font-size:13px;line-height:1.6;text-align:left}.qris-placeholder{width:min(260px,100%);min-height:180px;margin:12px auto;border:2px dashed #cbd5e1;border-radius:16px;display:grid;place-items:center;color:#64748b;font-size:12px;padding:15px;background:#fff}.qris-placeholder img{max-width:100%;max-height:280px;border-radius:12px}.buy-submit{width:100%;border:0;cursor:pointer;margin-top:10px}@media(max-width:900px){.pricing-grid{grid-template-columns:repeat(2,1fr)}.checkout-grid{grid-template-columns:1fr}}@media(max-width:560px){.pricing{padding-bottom:70px}.pricing-grid{grid-template-columns:1fr}.price-card{min-height:250px}.checkout-card{padding:20px}}
 
-.status-modal-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.75);backdrop-filter:blur(8px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}.status-modal-overlay.show{display:flex}.status-modal-box{background:#fff;border-radius:24px;padding:40px 30px;max-width:440px;width:100%;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,0.3);animation:popupIn 0.3s ease-out}.spinner-ring{width:60px;height:60px;border:5px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite}.status-active-icon{width:70px;height:70px;border-radius:50%;background:#dcfce7;color:#16a34a;display:grid;place-items:center;font-size:32px;margin:0 auto 20px}@keyframes spin{to{transform:rotate(360deg)}}@keyframes popupIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+.status-modal-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.75);backdrop-filter:blur(8px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}.status-modal-overlay.show{display:flex}.status-modal-box{background:#fff;border-radius:24px;padding:40px 30px;max-width:440px;width:100%;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,0.3);animation:popupIn 0.3s ease-out}.spinner-ring{width:60px;height:60px;border:5px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite}.status-active-icon{width:70px;height:70px;border-radius:50%;background:#dcfce7;color:#16a34a;display:grid;place-items:center;font-size:32px;margin:0 auto 20px}.status-reject-icon{width:70px;height:70px;border-radius:50%;background:#fee2e2;color:#dc2626;display:grid;place-items:center;font-size:32px;margin:0 auto 20px}@keyframes spin{to{transform:rotate(360deg)}}@keyframes popupIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
 </style>
 </head>
 <body>
@@ -67,10 +67,14 @@
   <div class="status-modal-box" id="statusModalBox">
     <div class="spinner-ring" id="statusSpinner"></div>
     <div class="status-active-icon" id="statusActiveIcon" style="display:none;"><i class="fa-solid fa-check"></i></div>
+    <div class="status-reject-icon" id="statusRejectIcon" style="display:none;"><i class="fa-solid fa-xmark"></i></div>
     <h3 id="statusTitle" style="font-size:20px;color:#0f172a;margin-bottom:8px;">Mohon menunggu paket anda Sedang Diproses</h3>
     <p id="statusDesc" style="font-size:13px;color:#64748b;line-height:1.6;">Verifikasi sedang dilakukan oleh Superadmin. Mohon jangan menutup halaman ini.</p>
     <div id="statusActionArea" style="margin-top:20px;display:none;">
       <a href="https://rekapinyu.github.io/" class="btn btn-primary" style="width:100%;">Masuk Aplikasi REKAPINYU <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div id="statusRejectActionArea" style="margin-top:20px;display:none;">
+      <button onclick="closeStatusModal()" class="btn btn-primary" style="width:100%;background:#ef4444;">Tutup &amp; Coba Lagi</button>
     </div>
   </div>
 </div>
@@ -134,16 +138,41 @@ function submitBuy(e){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
   }
 
+  // Reset tampilan modal ke kondisi awal (menunggu)
+  document.getElementById('statusSpinner').style.display = 'block';
+  document.getElementById('statusActiveIcon').style.display = 'none';
+  document.getElementById('statusRejectIcon').style.display = 'none';
+  document.getElementById('statusTitle').textContent = 'Mohon menunggu paket anda Sedang Diproses';
+  document.getElementById('statusDesc').textContent = 'Verifikasi sedang dilakukan oleh Superadmin. Mohon jangan menutup halaman ini.';
+  document.getElementById('statusActionArea').style.display = 'none';
+  document.getElementById('statusRejectActionArea').style.display = 'none';
+
   document.getElementById('statusModalOverlay').classList.add('show');
 }
 
+function closeStatusModal(){
+  document.getElementById('statusModalOverlay').classList.remove('show');
+}
+
 function handleStatusUpdate(id, status){
-  if(id === currentTxId && status === 'DIKONFIRMASI'){
-    document.getElementById('statusSpinner').style.display = 'none';
-    document.getElementById('statusActiveIcon').style.display = 'grid';
-    document.getElementById('statusTitle').textContent = 'Paket sudah aktif';
-    document.getElementById('statusDesc').textContent = 'Selamat! Paket Anda telah berhasil diaktifkan. Silakan masuk ke aplikasi.';
-    document.getElementById('statusActionArea').style.display = 'block';
+  if(id === currentTxId){
+    if(status === 'DIKONFIRMASI'){
+      document.getElementById('statusSpinner').style.display = 'none';
+      document.getElementById('statusRejectIcon').style.display = 'none';
+      document.getElementById('statusActiveIcon').style.display = 'grid';
+      document.getElementById('statusTitle').textContent = 'Paket sudah aktif';
+      document.getElementById('statusDesc').textContent = 'Selamat! Paket Anda telah berhasil diaktifkan. Silakan masuk ke aplikasi.';
+      document.getElementById('statusActionArea').style.display = 'block';
+      document.getElementById('statusRejectActionArea').style.display = 'none';
+    } else if(status === 'DITOLAK'){
+      document.getElementById('statusSpinner').style.display = 'none';
+      document.getElementById('statusActiveIcon').style.display = 'none';
+      document.getElementById('statusRejectIcon').style.display = 'grid';
+      document.getElementById('statusTitle').textContent = 'Paket dibatalkan';
+      document.getElementById('statusDesc').textContent = 'Silahkan Melakukan Pembayaran Dulu, Baru Klik Konfirmasi Pembayaran';
+      document.getElementById('statusActionArea').style.display = 'none';
+      document.getElementById('statusRejectActionArea').style.display = 'block';
+    }
   }
 }
 
