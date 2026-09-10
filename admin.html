@@ -417,31 +417,42 @@ function showAdminAuthError(message){
 }
 let superadminStarted=false;
 function startSuperadminAfterAuth(){
-  if(superadminStarted)return;
-  superadminStarted=true;
-  const overlay=document.getElementById('adminAuthOverlay');
-  if(overlay)overlay.style.display='none';
-  startFirebase();
+  // Gantilah baris 420-445 dengan kode ini:
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const adminAuth = firebase.auth();
+
+function showAdminAuthError(message) {
+  const el = document.getElementById('adminAuthError');
+  if (el) { el.textContent = message; el.style.display = 'block'; }
 }
-document.getElementById('adminLoginBtn')?.addEventListener('click',async()=>{
-  const email=document.getElementById('adminEmail')?.value.trim();
-  const password=document.getElementById('adminPassword')?.value||'';
-  if(!email||!password){showAdminAuthError('Email dan kata sandi wajib diisi.');return;}
-  const btn=document.getElementById('adminLoginBtn'); btn.disabled=true; btn.textContent='Memproses...';
-  try{
-    await adminAuth.signInWithEmailAndPassword(email,password);
+
+let superadminStarted = false;
+function startSuperadminAfterAuth() {
+  if (superadminStarted) return;
+  superadminStarted = true;
+  const overlay = document.getElementById('adminAuthOverlay');
+  if (overlay) overlay.style.display = 'none';
+  startFirebase();
+  showSection('dashboardSection', document.querySelector('.sidebar-menu a'));
+}
+
+document.getElementById('adminLoginBtn')?.addEventListener('click', async () => {
+  const email = document.getElementById('adminEmail')?.value.trim();
+  const password = document.getElementById('adminPassword')?.value || '';
+  if (!email || !password) { showAdminAuthError('Email dan kata sandi wajib diisi.'); return; }
+  const btn = document.getElementById('adminLoginBtn'); btn.disabled = true; btn.textContent = 'Memproses...';
+  try {
+    await adminAuth.signInWithEmailAndPassword(email, password);
     startSuperadminAfterAuth();
-  }catch(e){
-    console.error('Login Superadmin:',e);
-    showAdminAuthError(e?.message||'Login Superadmin gagal.');
-    btn.disabled=false; btn.textContent='Masuk Superadmin';
+  } catch (e) {
+    console.error('Login Superadmin:', e);
+    showAdminAuthError(e?.message || 'Login Superadmin gagal.');
+    btn.disabled = false; btn.textContent = 'Masuk Superadmin';
   }
 });
-adminAuth.onAuthStateChanged(user=>{
-  if(user) startSuperadminAfterAuth();
+
+adminAuth.onAuthStateChanged(user => {
+  if (user) startSuperadminAfterAuth();
 });
-startFirebase();
-showSection('dashboardSection',document.querySelector('.sidebar-menu a'));
-</script>
 </body>
 </html>
