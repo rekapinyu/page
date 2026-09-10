@@ -98,10 +98,28 @@ tr:hover{background:#f8fafc}
 
 .admin-section{animation:fadeIn .18s ease}.admin-section code{background:#f1f5f9;padding:2px 5px;border-radius:5px}
 @keyframes fadeIn{from{opacity:.3;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+/* REKAPINYU SUPERADMIN: login Firebase, hanya untuk akses data admin */
+#adminAuthOverlay{position:fixed;inset:0;background:rgba(15,23,42,.78);backdrop-filter:blur(8px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
+#adminAuthBox{background:#fff;width:min(420px,100%);border-radius:22px;padding:28px;box-shadow:0 25px 70px rgba(0,0,0,.3)}
+#adminAuthBox h2{margin:0 0 8px;color:#10233f}#adminAuthBox p{color:#64748b;font-size:13px;line-height:1.6;margin-bottom:18px}
+#adminAuthBox input{width:100%;padding:12px;border:1px solid #d8e3ee;border-radius:11px;margin:6px 0 10px;box-sizing:border-box}
+#adminAuthBox button{width:100%;padding:12px;border:0;border-radius:11px;background:#2563eb;color:#fff;font-weight:800;cursor:pointer}
+#adminAuthError{display:none;color:#dc2626;font-size:12px;margin:8px 0}
 </style>
 </head>
 
 <body>
+<div id="adminAuthOverlay">
+  <div id="adminAuthBox">
+    <h2>Login Superadmin</h2>
+    <p>Masuk dengan akun Firebase Authentication Superadmin untuk mengakses data pengguna dan transaksi.</p>
+    <input id="adminEmail" type="email" placeholder="Email Superadmin" autocomplete="username">
+    <input id="adminPassword" type="password" placeholder="Kata sandi" autocomplete="current-password">
+    <div id="adminAuthError"></div>
+    <button id="adminLoginBtn" type="button">Masuk Superadmin</button>
+  </div>
+</div>
 <div class="sidebar">
   <div class="sidebar-brand"><i class="fa-solid fa-shield-halved"></i> SUPERADMIN</div>
   <div style="font-size:11px;color:#64748b;padding:0 8px">Pusat Kontrol REKAPINYU</div>
@@ -211,6 +229,7 @@ tr:hover{background:#f8fafc}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script>
 const firebaseConfig={apiKey:"AIzaSyAyzAV68m4BRtwmn0iu2vDplZaJ9r_uQVk",authDomain:"rekapinyu.firebaseapp.com",projectId:"rekapinyu",storageBucket:"rekapinyu.firebasestorage.app",messagingSenderId:"835450919713",appId:"1:835450919713:web:818f9f48c5b05330d67c60",databaseURL:"https://rekapinyu-default-rtdb.asia-southeast1.firebasedatabase.app"};
 let db=null,fs=null,currentFilter='ALL',transactions=[],users=[],notifications=[],activity=[];
@@ -388,6 +407,39 @@ function startFirebase(){
     document.getElementById('settingsFirebase').textContent='Gagal: '+e.message;
   }
 }
+
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+const adminAuth = firebase.auth();
+
+function showAdminAuthError(message){
+  const el=document.getElementById('adminAuthError');
+  if(el){el.textContent=message;el.style.display='block';}
+}
+let superadminStarted=false;
+function startSuperadminAfterAuth(){
+  if(superadminStarted)return;
+  superadminStarted=true;
+  const overlay=document.getElementById('adminAuthOverlay');
+  if(overlay)overlay.style.display='none';
+  startFirebase();
+}
+document.getElementById('adminLoginBtn')?.addEventListener('click',async()=>{
+  const email=document.getElementById('adminEmail')?.value.trim();
+  const password=document.getElementById('adminPassword')?.value||'';
+  if(!email||!password){showAdminAuthError('Email dan kata sandi wajib diisi.');return;}
+  const btn=document.getElementById('adminLoginBtn'); btn.disabled=true; btn.textContent='Memproses...';
+  try{
+    await adminAuth.signInWithEmailAndPassword(email,password);
+    startSuperadminAfterAuth();
+  }catch(e){
+    console.error('Login Superadmin:',e);
+    showAdminAuthError(e?.message||'Login Superadmin gagal.');
+    btn.disabled=false; btn.textContent='Masuk Superadmin';
+  }
+});
+adminAuth.onAuthStateChanged(user=>{
+  if(user) startSuperadminAfterAuth();
+});
 startFirebase();
 showSection('dashboardSection',document.querySelector('.sidebar-menu a'));
 </script>
