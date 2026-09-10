@@ -274,17 +274,49 @@ document.addEventListener('DOMContentLoaded', function () {
       const phone = document.getElementById('login-phone').value.trim();
       const password = document.getElementById('login-password').value;
 
-      const registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
-      const user = registeredUsers.find(u => u.phone === phone && u.password === password);
+      // 1. Cek terlebih dahulu data pendaftaran di Firebase Realtime Database
+      db.ref('users/' + phone).once('value').then(function(snapshot) {
+        let user = null;
+        if (snapshot.exists()) {
+          const val = snapshot.val();
+          if (val.password === password) {
+            user = {
+              name: val.name || val.storeName || "Pengguna",
+              phone: phone,
+              password: password,
+              photo: val.photo || ""
+            };
+          }
+        }
 
-      if (user) {
-        localStorage.setItem('finance_active_session', JSON.stringify(user));
-        alert(`Selamat datang kembali, ${user.name}!`);
-        // Mengarahkan ke URL aplikasi utama saat login berhasil
-        window.location.href = 'https://rekapinyu.github.io/';
-      } else {
-        alert('Nomor HP atau kata sandi tidak cocok/belum terdaftar.');
-      }
+        // 2. Jika tidak ditemukan di Firebase, lakukan fallback cek ke localStorage
+        if (!user) {
+          const registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+          user = registeredUsers.find(u => u.phone === phone && u.password === password);
+        }
+
+        // 3. Eksekusi login jika user terverifikasi
+        if (user) {
+          localStorage.setItem('finance_active_session', JSON.stringify(user));
+          alert(`Selamat datang kembali, ${user.name}!`);
+          // Mengarahkan ke URL aplikasi utama saat login berhasil
+          window.location.href = 'https://rekapinyu.github.io/';
+        } else {
+          alert('Nomor HP atau kata sandi tidak cocok/belum terdaftar.');
+        }
+      }).catch(function(error) {
+        // Fallback saat koneksi internet / Firebase bermasalah
+        const registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+        const user = registeredUsers.find(u => u.phone === phone && u.password === password);
+
+        if (user) {
+          localStorage.setItem('finance_active_session', JSON.stringify(user));
+          alert(`Selamat datang kembali, ${user.name}!`);
+          window.location.href = 'https://rekapinyu.github.io/';
+        } else {
+          alert('Nomor HP atau kata sandi tidak cocok/belum terdaftar.');
+        }
+      });
     });
   }
 
