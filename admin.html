@@ -212,7 +212,7 @@ tr:hover{background:#f8fafc}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
-const firebaseConfig={apiKey:"AIzaSyAyzAV68m4BRtwmn0iu2vDplZaJ9r_uQVk",authDomain:"rekapinyu.firebaseapp.com",projectId:"rekapinyu",storageBucket:"rekapinyu.firebasestorage.app",messagingSenderId:"835450919713",appId:"1:835450919713:web:818f9f48c5b05330d67c60",databaseURL:"https://rekapinyu-default-rtdb.firebaseio.com"};
+const firebaseConfig={apiKey:"AIzaSyAyzAV68m4BRtwmn0iu2vDplZaJ9r_uQVk",authDomain:"rekapinyu.firebaseapp.com",projectId:"rekapinyu",storageBucket:"rekapinyu.firebasestorage.app",messagingSenderId:"835450919713",appId:"1:835450919713:web:818f9f48c5b05330d67c60",databaseURL:"https://rekapinyu-default-rtdb.asia-southeast1.firebasedatabase.app"};
 let db=null,fs=null,currentFilter='ALL',transactions=[],users=[],notifications=[],activity=[];
 const packageDays={"1 Bulan":30,"3 Bulan":90,"6 Bulan":180,"12 Bulan":365};
 
@@ -300,36 +300,93 @@ function addNotification(x){
 function refreshAll(){if(db){db.ref('rekapinyu_transactions').once('value');}loadFirestoreUsers();renderStats();renderTransactions();renderUsers();renderLatest();renderActivity();}
 let notificationReady=false;
 const knownTransactionKeys=new Set();
+const pendingTransactionAdds=new Map();
+
 function startFirebase(){
   try{
-    if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.database();fs=firebase.firestore();
+    if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+    db=firebase.database();
+    fs=firebase.firestore();
+
     document.getElementById('firebaseState').innerHTML='<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> Firebase terhubung';
     document.getElementById('settingsFirebase').textContent='Terhubung ke Firebase Realtime Database + Firestore';
-    // Semua transaksi tetap dimuat realtime untuk statistik dan tabel.
-    db.ref('rekapinyu_transactions').on('value',snap=>{
-      transactions=normalizeTransactions(snap.val());
-      knownTransactionKeys.clear();
-      transactions.forEach(x=>knownTransactionKeys.add(x._key));
-      notificationReady=true;
-      renderStats();renderTransactions();renderLatest();
-    },err=>{
-      console.warn('Realtime transaksi:',err);
-      toast('Transaksi tidak dapat dibaca: '+err.message);
-    });
-    // Notifikasi pembayaran baru: child_added hanya memberi notifikasi untuk data yang benar-benar masuk setelah dashboard siap.
-    db.ref('rekapinyu_transactions').on('child_added',snap=>{
+
+    const txRef=db.ref('rekapinyu_transactions');
+
+    // Listener child_added dipasang sejak awal agar pembayaran tidak terlewat.
+    // Data yang sudah ada saat dashboard dibuka tidak akan dianggap notifikasi baru.
+    txRef.on('child_added',snap=>{
       const x=snap.val()||{};
-      if(!notificationReady){knownTransactionKeys.add(snap.key);return;}
+      if(!notificationReady){
+        pendingTransactionAdds.set(snap.key,x);
+        return;
+      }
       if(!knownTransactionKeys.has(snap.key)){
         knownTransactionKeys.add(snap.key);
-        if(x.status==='MENUNGGU')addNotification({...x,_key:snap.key,id:x.id||snap.key});
+        if(x.status==='MENUNGGU'){
+          addNotification({...x,_key:snap.key,id:x.id||snap.key});
+          toast('Pembayaran baru masuk: '+(x.id||snap.key));
+        }
       }
-    },err=>{console.warn('Notifikasi realtime:',err);toast('Notifikasi realtime gagal: '+err.message);});
-    db.ref('rekapinyu_transactions').on('child_changed',snap=>{const x=snap.val()||{};activity.push({title:'Status transaksi berubah',text:`${x.id||snap.key} → ${x.status||'-'}`,time:Date.now()});renderActivity();});
+    },err=>{
+      console.error('Notifikasi realtime:',err);
+      toast('Notifikasi realtime gagal: '+err.message);
+    });
+
+    // Semua transaksi tetap dimuat realtime untuk statistik dan tabel.
+    txRef.on('value',snap=>{
+      transactions=normalizeTransactions(snap.val());
+
+      const initialKeys=new Set(Object.keys(snap.val()||{}));
+      knownTransactionKeys.clear();
+      initialKeys.forEach(k=>knownTransactionKeys.add(k));
+
+      // Selesaikan event child_added yang datang sebelum snapshot awal selesai.
+      // Hanya key yang TIDAK ada pada snapshot awal yang benar-benar transaksi baru.
+      pendingTransactionAdds.forEach((x,key)=>{
+        if(!initialKeys.has(key) && x.status==='MENUNGGU'){
+          addNotification({...x,_key:key,id:x.id||key});
+          toast('Pembayaran baru masuk: '+(x.id||key));
+        }
+      });
+      pendingTransactionAdds.clear();
+      notificationReady=true;
+
+      renderStats();renderTransactions();renderLatest();
+    },err=>{
+      console.error('Realtime transaksi:',err);
+      toast('Transaksi tidak dapat dibaca: '+err.message);
+    });
+
+    txRef.on('child_changed',snap=>{
+      const x=snap.val()||{};
+      activity.push({
+        title:'Status transaksi berubah',
+        text:`${x.id||snap.key} → ${x.status||'-'}`,
+        time:Date.now()
+      });
+      renderActivity();
+    });
+
     // Pengguna aplikasi disimpan di Firestore /rekapinyu_users/{uid}: realtime
-    if(fs){fs.collection('rekapinyu_users').onSnapshot(snap=>{const map={};snap.forEach(doc=>{map[doc.id]={...doc.data(),uid:doc.id};});loadUsers(map);renderStats();renderUsers();},err=>{console.warn('Firestore pengguna realtime:',err);loadFirestoreUsers();});}
+    if(fs){
+      fs.collection('rekapinyu_users').onSnapshot(snap=>{
+        const map={};
+        snap.forEach(doc=>{map[doc.id]={...doc.data(),uid:doc.id};});
+        loadUsers(map);
+        renderStats();
+        renderUsers();
+      },err=>{
+        console.warn('Firestore pengguna realtime:',err);
+        loadFirestoreUsers();
+      });
+    }
     loadFirestoreUsers();
-  }catch(e){document.getElementById('firebaseState').innerHTML='<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i> Firebase gagal';document.getElementById('settingsFirebase').textContent='Gagal: '+e.message;}
+  }catch(e){
+    console.error('Superadmin Firebase:',e);
+    document.getElementById('firebaseState').innerHTML='<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i> Firebase gagal';
+    document.getElementById('settingsFirebase').textContent='Gagal: '+e.message;
+  }
 }
 startFirebase();
 showSection('dashboardSection',document.querySelector('.sidebar-menu a'));
