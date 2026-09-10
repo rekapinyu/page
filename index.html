@@ -280,7 +280,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (user) {
         localStorage.setItem('finance_active_session', JSON.stringify(user));
         alert(`Selamat datang kembali, ${user.name}!`);
-        window.location.href = 'indexApp.html';
+        // Mengarahkan ke URL aplikasi utama saat login berhasil
+        window.location.href = 'https://rekapinyu.github.io/';
       } else {
         alert('Nomor HP atau kata sandi tidak cocok/belum terdaftar.');
       }
@@ -319,7 +320,8 @@ document.addEventListener('DOMContentLoaded', function () {
       localStorage.setItem('finance_active_session', JSON.stringify(newUser));
 
       alert('Pendaftaran berhasil! Mengalihkan ke aplikasi...');
-      window.location.href = 'indexApp.html';
+      // Mengarahkan langsung ke URL aplikasi utama saat pendaftaran berhasil
+      window.location.href = 'https://rekapinyu.github.io/';
     });
   }
 });
