@@ -30,7 +30,43 @@
 .form-group label{font-size:12px;font-weight:800;color:#52647d}
 .form-group input,.form-group select{width:100%;padding:12px 13px;border:1px solid #d8e3ee;border-radius:12px;outline:none;font:inherit}
 .form-group input:focus,.form-group select:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb14}
-@media(max-width:768px){.form-grid-single{grid-template-columns:1fr}}
+
+/* CSS Tambahan Dari LoginApp */
+.auth-container {
+  display: flex;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #dfeaf5;
+  overflow: hidden;
+}
+.auth-col {
+  flex: 1;
+  padding: 30px;
+}
+.auth-col.login-section {
+  border-right: 1px solid #e0e0e0;
+  background-color: #fafafa;
+}
+.auth-col.register-section {
+  background-color: #ffffff;
+}
+.auth-col h2 {
+  font-size: 20px;
+  margin-bottom: 6px;
+  color: #10233f;
+}
+.btn-login {
+  background-color: #007bff;
+}
+.btn-register {
+  background-color: #28a745;
+}
+@media(max-width:768px){
+  .form-grid-single{grid-template-columns:1fr}
+  .auth-container { flex-direction: column; }
+  .auth-col.login-section { border-right: none; border-bottom: 1px solid #e0e0e0; }
+}
 </style>
 </head>
 <body>
@@ -73,33 +109,47 @@
     <!-- KEDUA FORM TEPAT DI BAWAH KOTAK HARGA PAKET -->
     <div class="forms-container reveal">
       
-      <!-- FORM 1: PENDAFTARAN INTEGRASI FIREBASE -->
-      <div class="form-card">
-        <h3><i class="fa-solid fa-user-plus" style="color:#2563eb;"></i> Form Pendaftaran Akun</h3>
-        <p class="subtitle">Daftar sekarang untuk membuka akses login ke aplikasi REKAPINYU.</p>
-        <form onsubmit="handleFirebaseRegister(event)">
-          <div class="form-grid-single">
+      <!-- DUKUNGAN INDEX LOGIN UNTUK PAGE (LOGIN & PENDAFTARAN) -->
+      <div class="auth-container">
+        <!-- Kiri: Form Login -->
+        <div class="auth-col login-section">
+          <h2>Masuk Akun</h2>
+          <p class="subtitle">Silakan login jika sudah memiliki akun</p>
+          
+          <form id="form-login">
             <div class="form-group">
-              <label for="regStoreName">Nama Toko</label>
-              <input id="regStoreName" type="text" placeholder="Masukkan nama toko" required>
+              <label for="login-phone">Nomor WhatsApp / HP</label>
+              <input type="tel" id="login-phone" placeholder="Contoh: 08123456789" required>
             </div>
             <div class="form-group">
-              <label for="regOwnerName">Nama Pemilik Toko</label>
-              <input id="regOwnerName" type="text" placeholder="Masukkan nama pemilik" required>
+              <label for="login-password">Kata Sandi</label>
+              <input type="password" id="login-password" placeholder="Masukkan kata sandi" required>
             </div>
-          </div>
-          <div class="form-grid-single">
+            <button type="submit" class="btn btn-primary btn-login">Masuk ke Aplikasi</button>
+          </form>
+        </div>
+
+        <!-- Kanan: Form Pendaftaran -->
+        <div class="auth-col register-section">
+          <h2>Daftar Baru</h2>
+          <p class="subtitle">Buat akun baru untuk mulai mencatat keuangan</p>
+          
+          <form id="form-register">
             <div class="form-group">
-              <label for="regPhone">Nomor HP / WhatsApp</label>
-              <input id="regPhone" type="tel" placeholder="Contoh: 081234567890" required>
+              <label for="reg-name">Nama Lengkap</label>
+              <input type="text" id="reg-name" placeholder="Nama lengkap Anda" required>
             </div>
             <div class="form-group">
-              <label for="regPassword">Kata Sandi (Password)</label>
-              <input id="regPassword" type="password" placeholder="Buat kata sandi akun" required>
+              <label for="reg-phone">Nomor WhatsApp / HP</label>
+              <input type="tel" id="reg-phone" placeholder="Contoh: 08123456789" required>
             </div>
-          </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;margin-top:10px;"><i class="fa-solid fa-paper-plane"></i> Daftar Sekarang</button>
-        </form>
+            <div class="form-group">
+              <label for="reg-password">Kata Sandi</label>
+              <input type="password" id="reg-password" placeholder="Buat kata sandi" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-register">Daftar Akun Baru</button>
+          </form>
+        </div>
       </div>
 
       <!-- FORM 2: PERPANJANG PAKET -->
@@ -213,40 +263,66 @@ if (!firebase.apps.length) {
 }
 const db = firebase.database();
 
-// Integrasi Pendaftaran ke Firebase Console
-function handleFirebaseRegister(e) {
-  e.preventDefault();
-  const storeName = document.getElementById('regStoreName').value.trim();
-  const ownerName = document.getElementById('regOwnerName').value.trim();
-  const phone = document.getElementById('regPhone').value.trim();
-  const password = document.getElementById('regPassword').value.trim();
+// LOGIKA DARI LOGINAPP UNTUK PAGE (LOGIN & REGISTER)
+document.addEventListener('DOMContentLoaded', function () {
+  const formLogin = document.getElementById('form-login');
+  const formRegister = document.getElementById('form-register');
 
-  if(!phone || !password || !storeName || !ownerName){
-    alert('Harap lengkapi semua data pendaftaran!');
-    return;
+  if (formLogin) {
+    formLogin.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const phone = document.getElementById('login-phone').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      const registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+      const user = registeredUsers.find(u => u.phone === phone && u.password === password);
+
+      if (user) {
+        localStorage.setItem('finance_active_session', JSON.stringify(user));
+        alert(`Selamat datang kembali, ${user.name}!`);
+        window.location.href = 'indexApp.html';
+      } else {
+        alert('Nomor HP atau kata sandi tidak cocok/belum terdaftar.');
+      }
+    });
   }
 
-  // Bersihkan format nomor HP sebagai Key/ID unik
-  const userKey = phone.replace(/[^0-9]/g, '');
+  if (formRegister) {
+    formRegister.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const password = document.getElementById('reg-password').value;
 
-  const userData = {
-    storeName: storeName,
-    ownerName: ownerName,
-    phone: phone,
-    password: password,
-    createdAt: new Date().toISOString(),
-    status: 'AKTIF'
-  };
+      let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+      const existingUser = registeredUsers.find(u => u.phone === phone);
+      if (existingUser) {
+        alert('Nomor HP sudah terdaftar. Silakan gunakan form login di sebelah kiri.');
+        return;
+      }
 
-  db.ref('users/' + userKey).set(userData, function(error) {
-    if (error) {
-      alert('Gagal mendaftar: ' + error.message);
-    } else {
-      alert('Pendaftaran Berhasil! Silakan masuk ke aplikasi REKAPINYU.');
-      window.location.href = 'https://rekapinyu.github.io/';
-    }
-  });
-}
+      const newUser = {
+        name: name,
+        phone: phone,
+        password: password,
+        photo: ""
+      };
+
+      registeredUsers.push(newUser);
+      localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
+
+      localStorage.setItem(`finance_history_desktop_${phone}`, JSON.stringify([]));
+      localStorage.setItem(`finance_pengeluaran_desktop_${phone}`, JSON.stringify([]));
+      localStorage.setItem(`finance_kasbon_desktop_${phone}`, JSON.stringify([]));
+      localStorage.setItem(`finance_backup_desktop_${phone}`, JSON.stringify([]));
+
+      localStorage.setItem('finance_active_session', JSON.stringify(newUser));
+
+      alert('Pendaftaran berhasil! Mengalihkan ke aplikasi...');
+      window.location.href = 'indexApp.html';
+    });
+  }
+});
 
 // Otomatis menampilkan Durasi Waktu Paket pada Form Perpanjang Paket
 function updateRenewDuration() {
