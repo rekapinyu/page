@@ -303,6 +303,11 @@ function handleRenewSubmit(e) {
   list.unshift(newTransaction);
   localStorage.setItem('rekapinyu_transactions', JSON.stringify(list));
 
+  // REKAPINYU INTEGRASI SUPERADMIN: simpan transaksi ke Firebase tanpa mengubah alur asli
+  if(typeof db!=='undefined' && db){
+    db.ref('rekapinyu_transactions/'+currentTxId).set(newTransaction).catch(err=>console.warn('Firebase transaksi:',err));
+  }
+
   if(channel){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
   }
@@ -368,6 +373,11 @@ function submitBuy(e){
   list.unshift(newTransaction);
   localStorage.setItem('rekapinyu_transactions', JSON.stringify(list));
 
+  // REKAPINYU INTEGRASI SUPERADMIN: simpan transaksi ke Firebase tanpa mengubah alur asli
+  if(typeof db!=='undefined' && db){
+    db.ref('rekapinyu_transactions/'+currentTxId).set(newTransaction).catch(err=>console.warn('Firebase transaksi:',err));
+  }
+
   if(channel){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
   }
@@ -408,6 +418,14 @@ function handleStatusUpdate(id, status){
       document.getElementById('statusRejectActionArea').style.display = 'block';
     }
   }
+}
+
+// REKAPINYU INTEGRASI SUPERADMIN: terima perubahan status langsung dari Firebase
+if(typeof db!=='undefined' && db){
+  db.ref('rekapinyu_transactions').on('child_changed', function(snapshot){
+    const tx=snapshot.val()||{};
+    if(tx.id) handleStatusUpdate(tx.id, tx.status);
+  });
 }
 
 if(channel){
