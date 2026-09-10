@@ -313,11 +313,15 @@ async function updateStatus(key,status){
   }catch(e){console.error(e);toast('Gagal menyimpan status: '+e.message);}
 }
 function addNotification(x){
-  notifications.push({title:'Pembayaran baru',text:`${x.storeName||'-'} · ${x.packageName||'-'} · ${x.amount||'-'}`,time:Date.now()});
-  const badge=document.getElementById('notifBadge');badge.textContent=notifications.length;badge.style.display='inline-block';renderNotifications();
+  notifications.push({title:'Pembayaran Menunggu Konfirmasi',text:`${x.storeName||'Toko'} · ${x.packageName||'Paket'} · ${x.amount||'Rp 0'}`,time:x.timestamp||Date.now()});
+  const badge=document.getElementById('notifBadge');
+  if(badge){
+    badge.textContent=notifications.length;
+    badge.style.display=notifications.length>0?'inline-block':'none';
+  }
+  renderNotifications();
 }
 function refreshAll(){if(db){db.ref('rekapinyu_transactions').once('value');}loadFirestoreUsers();renderStats();renderTransactions();renderUsers();renderLatest();renderActivity();}
-let isInitialLoad = true;
 
 let isInitialLoad = true;
 
@@ -332,14 +336,15 @@ function startFirebase(){
 
     const txRef=db.ref('rekapinyu_transactions');
 
+    // Menerima semua data transaksi dan memfilter mana yang butuh konfirmasi
     txRef.on('value', snap => {
       const rawData = snap.val() || {};
       transactions = normalizeTransactions(rawData);
 
-      // Otomatis masukkan transaksi MENUNGGU ke daftar notifikasi
+      // Bersihkan dan muat ulang notifikasi untuk transaksi status 'MENUNGGU'
       notifications = [];
       Object.entries(rawData).forEach(([key, x]) => {
-        if (x.status === 'MENUNGGU') {
+        if (!x.status || x.status === 'MENUNGGU') {
           notifications.push({
             title: 'Pembayaran Menunggu Konfirmasi',
             text: `${x.storeName || 'Toko'} · ${x.packageName || 'Paket'} · ${x.amount || 'Rp 0'}`,
@@ -348,18 +353,16 @@ function startFirebase(){
         }
       });
 
+      // Update badge angka notifikasi di sidebar
       const badge = document.getElementById('notifBadge');
       if (badge) {
         badge.textContent = notifications.length;
         badge.style.display = notifications.length > 0 ? 'inline-block' : 'none';
       }
 
+      // Notifikasi toast jika ada transaksi baru yang masuk setelah halaman dibuka
       if (!isInitialLoad) {
-        toast('Ada transaksi baru masuk!');
-        try {
-          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-          audio.play().catch(() => {});
-        } catch (e) {}
+        toast('Ada konfirmasi pembayaran baru masuk!');
       }
 
       isInitialLoad = false;
@@ -383,6 +386,7 @@ function startFirebase(){
       renderActivity();
     });
 
+    // Pengguna aplikasi disimpan di Firestore /rekapinyu_users/{uid}: realtime
     if(fs){
       fs.collection('rekapinyu_users').onSnapshot(snap => {
         const map = {};
@@ -402,6 +406,14 @@ function startFirebase(){
     document.getElementById('settingsFirebase').textContent='Gagal: '+e.message;
   }
 }
+
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+const adminAuth = firebase.auth();
+
+function showAdminAuthError(message){
+  const el=document.getElementById('adminAuthError');
+  if(el){el.textContent=message;el.style.display='block';}
+}
 let superadminStarted=false;
 function startSuperadminAfterAuth(){
   if(superadminStarted)return;
@@ -409,6 +421,7 @@ function startSuperadminAfterAuth(){
   const overlay=document.getElementById('adminAuthOverlay');
   if(overlay)overlay.style.display='none';
   startFirebase();
+  showSection('dashboardSection',document.querySelector('.sidebar-menu a'));
 }
 document.getElementById('adminLoginBtn')?.addEventListener('click',async()=>{
   const email=document.getElementById('adminEmail')?.value.trim();
@@ -427,8 +440,6 @@ document.getElementById('adminLoginBtn')?.addEventListener('click',async()=>{
 adminAuth.onAuthStateChanged(user=>{
   if(user) startSuperadminAfterAuth();
 });
-startFirebase();
-showSection('dashboardSection',document.querySelector('.sidebar-menu a'));
 </script>
 </body>
 </html>
