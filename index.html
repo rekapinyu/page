@@ -12,7 +12,6 @@
 <!-- Firebase SDK JS -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,system-ui,sans-serif;color:#10233f;background:#f8fbff;overflow-x:hidden}.container{width:min(1160px,92%);margin:auto}header{position:sticky;top:0;z-index:1000;background:#ffffffee;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #e2eaf2;box-shadow:0 4px 20px #17385e0b}.nav{height:78px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:11px;font-weight:900;font-size:22px;color:#12345b;text-decoration:none}.brand-mark{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#0f766e,#2563eb);box-shadow:0 10px 25px #2563eb30}.navlinks{display:flex;gap:28px;align-items:center}.navlinks a{color:#52647d;text-decoration:none;font-size:14px;font-weight:600}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 20px;border-radius:13px;text-decoration:none;font-weight:800;font-size:14px;transition:.25s;border:1px solid transparent}.btn-primary{color:#fff!important;background:linear-gradient(135deg,#0f766e,#2563eb);box-shadow:0 12px 30px #2563eb30}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 35px #2563eb45}.btn-light{background:#fff;color:#17385e;border-color:#dbe7f3}.hero{position:relative;padding:75px 0 95px;background:radial-gradient(circle at 85% 15%,#dbeafe 0,transparent 30%),radial-gradient(circle at 10% 70%,#ccfbf1 0,transparent 27%)}.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:60px;align-items:center}.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:#e8f7f5;color:#0f766e;font-size:12px;font-weight:800;margin-bottom:22px}.hero h1{font-size:clamp(42px,6vw,72px);line-height:1.02;letter-spacing:-3px;margin-bottom:22px}.gradient{background:linear-gradient(90deg,#0f766e,#2563eb,#7c3aed,#0f766e);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradient 6s ease infinite}.hero p{font-size:18px;line-height:1.75;color:#60718a;max-width:610px}.hero-actions{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}.typing{display:inline-block;border-right:3px solid #2563eb;white-space:nowrap;overflow:hidden;animation:typing 3.8s steps(30,end),blink .8s infinite;vertical-align:bottom}.hero-visual{position:relative}.photo-card{position:relative;border-radius:30px;overflow:hidden;box-shadow:0 35px 80px #163c6c25;border:10px solid #fff;background:#fff;transform:rotate(1deg);animation:float 5s ease-in-out infinite}.photo-card img{width:100%;height:420px;object-fit:cover;display:block}.glass{position:absolute;right:-18px;bottom:30px;background:#ffffffd9;backdrop-filter:blur(14px);padding:18px;border-radius:18px;box-shadow:0 18px 40px #17385e22;min-width:190px}.glass strong{display:block;font-size:25px}.glass span{font-size:12px;color:#6b7b91}.orb{position:absolute;width:170px;height:170px;border-radius:50%;background:#2563eb18;filter:blur(1px);top:-45px;right:-35px;animation:pulse 4s infinite}.section{padding:92px 0}.section-head{text-align:center;max-width:700px;margin:0 auto 45px}.section-head h2{font-size:40px;letter-spacing:-1.5px;margin-bottom:12px}.section-head p{color:#6b7b91;line-height:1.7}.features{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}.feature{background:#fff;border:1px solid #e5edf5;border-radius:22px;padding:24px;box-shadow:0 12px 35px #1b426d0b;transition:.25s}.feature:hover{transform:translateY(-7px);box-shadow:0 20px 40px #1b426d18}.icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#eff6ff;color:#2563eb;font-size:19px;margin-bottom:18px}.feature h3{font-size:16px;margin-bottom:9px}.feature p{font-size:13px;line-height:1.65;color:#718198}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.step{padding:28px;border-radius:24px;background:#10233f;color:#fff;position:relative;overflow:hidden}.step:after{content:'';position:absolute;width:130px;height:130px;border-radius:50%;right:-50px;bottom:-60px;background:#ffffff0d}.num{font-size:12px;font-weight:900;color:#67e8f9;margin-bottom:20px}.step h3{font-size:20px;margin-bottom:10px}.step p{color:#b7c4d5;line-height:1.7;font-size:14px}.cta{padding:70px 0}.cta-box{border-radius:30px;padding:55px;text-align:center;background:linear-gradient(135deg,#0f766e,#2563eb 55%,#4338ca);color:#fff;box-shadow:0 30px 70px #2563eb30}.cta-box h2{font-size:42px;letter-spacing:-1.5px;margin-bottom:14px}.cta-box p{color:#dbeafe;max-width:650px;margin:0 auto 25px;line-height:1.7}.cta-box .btn-light{border:0}.footer{padding:28px 0 40px;color:#718198;font-size:13px}.footer-inner{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #e2eaf2;padding-top:25px}.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}.reveal.show{opacity:1;transform:none}@keyframes gradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}@keyframes float{0%,100%{transform:rotate(1deg) translateY(0)}50%{transform:rotate(1deg) translateY(-10px)}}@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:1}}@keyframes typing{from{width:0}to{width:100%}}@keyframes blink{50%{border-color:transparent}}@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.hero{padding-top:45px}.hero-visual{max-width:650px;margin:auto}.features{grid-template-columns:repeat(2,1fr)}.navlinks a{display:none}.steps{grid-template-columns:1fr}.section{padding:70px 0}}@media(max-width:560px){.hero h1{font-size:43px;letter-spacing:-2px}.hero p{font-size:16px}.photo-card img{height:300px}.glass{right:10px;bottom:15px}.features{grid-template-columns:1fr}.cta-box{padding:38px 22px}.cta-box h2{font-size:31px}.footer-inner{flex-direction:column}}
 .pricing{padding:0 0 92px;background:#eef6ff}.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.price-card{position:relative;background:#fff;border:1px solid #dfeaf5;border-radius:24px;padding:28px 24px;box-shadow:0 14px 35px #1b426d0b;transition:.25s;display:flex;flex-direction:column;align-items:center;min-height:220px}.price-card:hover{transform:translateY(-7px);box-shadow:0 22px 45px #1b426d18}.price-card.best{border:2px solid #2563eb;box-shadow:0 18px 45px #2563eb20}.price-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0f766e,#2563eb);color:#fff;padding:7px 15px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}.price-card h3{font-size:19px;margin-bottom:20px;color:#10233f;text-align:center}.price-card ul{list-style:none;margin-bottom:20px;width:100%}.price-card li{font-size:14px;color:#52647d;line-height:1.6}.price-card li:before{content:"✓";color:#0f766e;font-weight:900;margin-right:8px}.price{font-size:25px;font-weight:900;color:#12345b;margin-top:auto;margin-bottom:0px;text-align:center}.price small{font-size:12px;color:#718198;font-weight:600}.price-btn{width:auto;padding:10px 24px;font-size:13px;cursor:pointer;border:none}
@@ -255,7 +254,7 @@
 <script>
 // KONFIGURASI FIREBASE REALTIME DATABASE REKAPINYU
 const firebaseConfig = {
-  databaseURL: "https://rekapinyu-default-rtdb.asia-southeast1.firebasedatabase.app"
+  databaseURL: "https://rekapinyu-default-rtdb.firebaseio.com"
 };
 
 // Inisialisasi Firebase jika belum diinisialisasi
@@ -263,13 +262,6 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.database();
-
-// REKAPINYU SUPERADMIN: sesi anonim hanya untuk akses realtime transaksi.
-// Tidak mengubah Login/Daftar pengguna utama.
-const rtdbAuthReady = firebase.auth().signInAnonymously()
-  .then(()=>console.log('REKAPINYU RTDB: autentikasi realtime berhasil'))
-  .catch(err=>{ console.error('REKAPINYU RTDB: autentikasi realtime gagal',err); throw err; });
-
 
 
 
@@ -310,11 +302,6 @@ function handleRenewSubmit(e) {
   let list = JSON.parse(localStorage.getItem('rekapinyu_transactions') || '[]');
   list.unshift(newTransaction);
   localStorage.setItem('rekapinyu_transactions', JSON.stringify(list));
-
-  // REKAPINYU SUPERADMIN: kirim transaksi ke Firebase setelah sesi realtime siap.
-  rtdbAuthReady.then(()=>db.ref('rekapinyu_transactions/' + currentTxId).set(newTransaction))
-    .then(()=>console.log('REKAPINYU RTDB: transaksi berhasil dikirim', currentTxId))
-    .catch(err=>console.error('REKAPINYU RTDB: gagal mengirim transaksi', err));
 
   if(channel){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
@@ -381,11 +368,6 @@ function submitBuy(e){
   list.unshift(newTransaction);
   localStorage.setItem('rekapinyu_transactions', JSON.stringify(list));
 
-  // REKAPINYU SUPERADMIN: kirim transaksi ke Firebase setelah sesi realtime siap.
-  rtdbAuthReady.then(()=>db.ref('rekapinyu_transactions/' + currentTxId).set(newTransaction))
-    .then(()=>console.log('REKAPINYU RTDB: transaksi berhasil dikirim', currentTxId))
-    .catch(err=>console.error('REKAPINYU RTDB: gagal mengirim transaksi', err));
-
   if(channel){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
   }
@@ -442,16 +424,6 @@ window.addEventListener('storage', function(e){
     handleStatusUpdate(data.id, data.status);
   }
 });
-
-// REKAPINYU SUPERADMIN: status Konfirmasi/Tolak diterima realtime.
-rtdbAuthReady.then(()=>{
-  db.ref('rekapinyu_transactions').on('child_changed', function(snapshot){
-    const tx = snapshot.val() || {};
-    if(tx.id && tx.status) handleStatusUpdate(tx.id, tx.status);
-  }, function(err){
-    console.error('REKAPINYU RTDB: listener status gagal',err);
-  });
-}).catch(()=>{});
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
