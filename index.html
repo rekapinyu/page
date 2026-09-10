@@ -9,12 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<!-- Tailwind CSS (Diintegrasikan untuk mendukung modul aplikasi) -->
-<script src="https://cdn.tailwindcss.com"></script>
 <!-- Firebase SDK JS -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,system-ui,sans-serif;color:#10233f;background:#f8fbff;overflow-x:hidden}.container{width:min(1160px,92%);margin:auto}header{position:sticky;top:0;z-index:1000;background:#ffffffee;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #e2eaf2;box-shadow:0 4px 20px #17385e0b}.nav{height:78px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:11px;font-weight:900;font-size:22px;color:#12345b;text-decoration:none}.brand-mark{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#0f766e,#2563eb);box-shadow:0 10px 25px #2563eb30}.navlinks{display:flex;gap:28px;align-items:center}.navlinks a{color:#52647d;text-decoration:none;font-size:14px;font-weight:600}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 20px;border-radius:13px;text-decoration:none;font-weight:800;font-size:14px;transition:.25s;border:1px solid transparent}.btn-primary{color:#fff!important;background:linear-gradient(135deg,#0f766e,#2563eb);box-shadow:0 12px 30px #2563eb30}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 35px #2563eb45}.btn-light{background:#fff;color:#17385e;border-color:#dbe7f3}.hero{position:relative;padding:75px 0 95px;background:radial-gradient(circle at 85% 15%,#dbeafe 0,transparent 30%),radial-gradient(circle at 10% 70%,#ccfbf1 0,transparent 27%)}.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:60px;align-items:center}.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:#e8f7f5;color:#0f766e;font-size:12px;font-weight:800;margin-bottom:22px}.hero h1{font-size:clamp(42px,6vw,72px);line-height:1.02;letter-spacing:-3px;margin-bottom:22px}.gradient{background:linear-gradient(90deg,#0f766e,#2563eb,#7c3aed,#0f766e);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradient 6s ease infinite}.hero p{font-size:18px;line-height:1.75;color:#60718a;max-width:610px}.hero-actions{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}.typing{display:inline-block;border-right:3px solid #2563eb;white-space:nowrap;overflow:hidden;animation:typing 3.8s steps(30,end),blink .8s infinite;vertical-align:bottom}.hero-visual{position:relative}.photo-card{position:relative;border-radius:30px;overflow:hidden;box-shadow:0 35px 80px #163c6c25;border:10px solid #fff;background:#fff;transform:rotate(1deg);animation:float 5s ease-in-out infinite}.photo-card img{width:100%;height:420px;object-fit:cover;display:block}.glass{position:absolute;right:-18px;bottom:30px;background:#ffffffd9;backdrop-filter:blur(14px);padding:18px;border-radius:18px;box-shadow:0 18px 40px #17385e22;min-width:190px}.glass strong{display:block;font-size:25px}.glass span{font-size:12px;color:#6b7b91}.orb{position:absolute;width:170px;height:170px;border-radius:50%;background:#2563eb18;filter:blur(1px);top:-45px;right:-35px;animation:pulse 4s infinite}.section{padding:92px 0}.section-head{text-align:center;max-width:700px;margin:0 auto 45px}.section-head h2{font-size:40px;letter-spacing:-1.5px;margin-bottom:12px}.section-head p{color:#6b7b91;line-height:1.7}.features{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}.feature{background:#fff;border:1px solid #e5edf5;border-radius:22px;padding:24px;box-shadow:0 12px 35px #1b426d0b;transition:.25s}.feature:hover{transform:translateY(-7px);box-shadow:0 20px 40px #1b426d18}.icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#eff6ff;color:#2563eb;font-size:19px;margin-bottom:18px}.feature h3{font-size:16px;margin-bottom:9px}.feature p{font-size:13px;line-height:1.65;color:#718198}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.step{padding:28px;border-radius:24px;background:#10233f;color:#fff;position:relative;overflow:hidden}.step:after{content:'';position:absolute;width:130px;height:130px;border-radius:50%;right:-50px;bottom:-60px;background:#ffffff0d}.num{font-size:12px;font-weight:900;color:#67e8f9;margin-bottom:20px}.step h3{font-size:20px;margin-bottom:10px}.step p{color:#b7c4d5;line-height:1.7;font-size:14px}.cta{padding:70px 0}.cta-box{border-radius:30px;padding:55px;text-align:center;background:linear-gradient(135deg,#0f766e,#2563eb 55%,#4338ca);color:#fff;box-shadow:0 30px 70px #2563eb30}.cta-box h2{font-size:42px;letter-spacing:-1.5px;margin-bottom:14px}.cta-box p{color:#dbeafe;max-width:650px;margin:0 auto 25px;line-height:1.7}.cta-box .btn-light{border:0}.footer{padding:28px 0 40px;color:#718198;font-size:13px}.footer-inner{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #e2eaf2;padding-top:25px}.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}.reveal.show{opacity:1;transform:none}@keyframes gradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}@keyframes float{0%,100%{transform:rotate(1deg) translateY(0)}50%{transform:rotate(1deg) translateY(-10px)}}@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:1}}@keyframes typing{from{width:0}to{width:100%}}@keyframes blink{50%{border-color:transparent}}@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.hero{padding-top:45px}.hero-visual{max-width:650px;margin:auto}.features{grid-template-columns:repeat(2,1fr)}.navlinks a{display:none}.steps{grid-template-columns:1fr}.section{padding:70px 0}}@media(max-width:560px){.hero h1{font-size:43px;letter-spacing:-2px}.hero p{font-size:16px}.photo-card img{height:300px}.glass{right:10px;bottom:15px}.features{grid-template-columns:1fr}.cta-box{padding:38px 22px}.cta-box h2{font-size:31px}.footer-inner{flex-direction:column}}
 .pricing{padding:0 0 92px;background:#eef6ff}.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.price-card{position:relative;background:#fff;border:1px solid #dfeaf5;border-radius:24px;padding:28px 24px;box-shadow:0 14px 35px #1b426d0b;transition:.25s;display:flex;flex-direction:column;align-items:center;min-height:220px}.price-card:hover{transform:translateY(-7px);box-shadow:0 22px 45px #1b426d18}.price-card.best{border:2px solid #2563eb;box-shadow:0 18px 45px #2563eb20}.price-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0f766e,#2563eb);color:#fff;padding:7px 15px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}.price-card h3{font-size:19px;margin-bottom:20px;color:#10233f;text-align:center}.price-card ul{list-style:none;margin-bottom:20px;width:100%}.price-card li{font-size:14px;color:#52647d;line-height:1.6}.price-card li:before{content:"✓";color:#0f766e;font-weight:900;margin-right:8px}.price{font-size:25px;font-weight:900;color:#12345b;margin-top:auto;margin-bottom:0px;text-align:center}.price small{font-size:12px;color:#718198;font-weight:600}.price-btn{width:auto;padding:10px 24px;font-size:13px;cursor:pointer;border:none}
@@ -73,12 +70,9 @@
 </style>
 </head>
 <body>
-
-<!-- CONTAINER LANDING PAGE (Sembunyi saat user sudah login) -->
-<div id="landingPageContainer">
-<header><div class="container nav"><a class="brand" href="#"><span class="brand-mark"><i class="fa-solid fa-chart-line"></i></span>REKAPINYU</a><nav class="navlinks"><a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#paket">Paket</a><a href="#tentang">Tentang</a><a class="btn btn-primary" href="#paket"><i class="fa-solid fa-right-to-bracket"></i> Masuk / Daftar</a></nav></div></header>
+<header><div class="container nav"><a class="brand" href="#"><span class="brand-mark"><i class="fa-solid fa-chart-line"></i></span>REKAPINYU</a><nav class="navlinks"><a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#paket">Paket</a><a href="#tentang">Tentang</a><a class="btn btn-primary" href="https://rekapinyu.github.io/"><i class="fa-solid fa-right-to-bracket"></i> Masuk / Daftar</a></nav></div></header>
 <main id="mainContent">
-<section class="hero"><div class="container hero-grid"><div class="reveal"><div class="eyebrow"><i class="fa-solid fa-sparkles"></i> Aplikasi Keuangan Toko</div><h1>Kelola keuangan toko jadi <span class="gradient">lebih rapi.</span></h1><p>Catat pendapatan, belanja, pengeluaran, kasbon, dan history harian dalam satu tempat. <span class="typing">Cepat. Akurat. Praktis.</span></p><div class="hero-actions"><a class="btn btn-primary" href="#paket">Mulai Gunakan REKAPINYU <i class="fa-solid fa-arrow-up-right-from-square"></i></a><a class="btn btn-light" href="#fitur">Lihat Fitur</a></div></div><div class="hero-visual reveal"><div class="orb"></div><div class="photo-card"><img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=85" alt="Perencanaan dan pencatatan keuangan"></div><div class="glass"><span>Total pencatatan</span><strong>Lebih teratur</strong><span><i class="fa-solid fa-circle-check" style="color:#16a34a"></i> Semua dalam satu aplikasi</span></div></div></div></section>
+<section class="hero"><div class="container hero-grid"><div class="reveal"><div class="eyebrow"><i class="fa-solid fa-sparkles"></i> Aplikasi Keuangan Toko</div><h1>Kelola keuangan toko jadi <span class="gradient">lebih rapi.</span></h1><p>Catat pendapatan, belanja, pengeluaran, kasbon, dan history harian dalam satu tempat. <span class="typing">Cepat. Akurat. Praktis.</span></p><div class="hero-actions"><a class="btn btn-primary" href="https://rekapinyu.github.io/">Mulai Gunakan REKAPINYU <i class="fa-solid fa-arrow-up-right-from-square"></i></a><a class="btn btn-light" href="#fitur">Lihat Fitur</a></div></div><div class="hero-visual reveal"><div class="orb"></div><div class="photo-card"><img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=85" alt="Perencanaan dan pencatatan keuangan"></div><div class="glass"><span>Total pencatatan</span><strong>Lebih teratur</strong><span><i class="fa-solid fa-circle-check" style="color:#16a34a"></i> Semua dalam satu aplikasi</span></div></div></div></section>
 <section id="fitur" class="section"><div class="container"><div class="section-head reveal"><h2>Satu aplikasi untuk kebutuhan toko</h2><p>REKAPINYU dirancang agar pencatatan harian terasa sederhana, sementara data tetap mudah ditinjau kembali.</p></div><div class="features"><div class="feature reveal"><div class="icon"><i class="fa-solid fa-pen-to-square"></i></div><h3>Input Harian</h3><p>Catat pendapatan, belanja, pengeluaran, dan persentase profit dengan cepat.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div><h3>History</h3><p>Lihat kembali data harian dan kelola pencatatan yang sudah tersimpan.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-wallet"></i></div><h3>Kasbon</h3><p>Bantu mencatat dan mengamankan akses data kasbon toko.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-chart-pie"></i></div><h3>Laporan</h3><p>Ringkas data keuangan bulanan berdasarkan history harian.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-cloud-arrow-up"></i></div><h3>Backup</h3><p>Manfaatkan backup otomatis agar data history lebih mudah dipulihkan.</p></div></div></div></section>
 <section id="cara-kerja" class="section" style="background:#eef6ff"><div class="container"><div class="section-head reveal"><h2>Mulai dalam 3 langkah</h2><p>Tidak perlu alur yang rumit. Masuk, catat, lalu pantau.</p></div><div class="steps"><div class="step reveal"><div class="num">01 — DAFTAR / MASUK</div><h3>Buat akun</h3><p>Gunakan nomor HP dan kata sandi untuk masuk ke aplikasi REKAPINYU.</p></div><div class="step reveal"><div class="num">02 — CATAT</div><h3>Input data harian</h3><p>Masukkan pendapatan, belanja, pengeluaran, dan profit sesuai kebutuhan toko.</p></div><div class="step reveal"><div class="num">03 — PANTAU</div><h3>Cek history & laporan</h3><p>Tinjau kembali pencatatan dan gunakan laporan bulanan untuk membantu evaluasi.</p></div></div></div></section>
 
@@ -245,7 +239,7 @@
     <h3 id="statusTitle" style="font-size:20px;color:#0f172a;margin-bottom:8px;">Mohon menunggu paket anda Sedang Diproses</h3>
     <p id="statusDesc" style="font-size:13px;color:#64748b;line-height:1.6;">Verifikasi sedang dilakukan oleh Superadmin. Mohon jangan menutup halaman ini.</p>
     <div id="statusActionArea" style="margin-top:20px;display:none;">
-      <button onclick="renderAppView()" class="btn btn-primary" style="width:100%;">Masuk Aplikasi REKAPINYU <i class="fa-solid fa-arrow-right"></i></button>
+      <a href="https://rekapinyu.github.io/" class="btn btn-primary" style="width:100%;">Masuk Aplikasi REKAPINYU <i class="fa-solid fa-arrow-right"></i></a>
     </div>
     <div id="statusRejectActionArea" style="margin-top:20px;display:none;">
       <button onclick="closeStatusModal()" class="btn btn-primary" style="width:100%;background:#ef4444;">Tutup &amp; Coba Lagi</button>
@@ -253,141 +247,9 @@
   </div>
 </div>
 
-<section id="tentang" class="cta"><div class="container"><div class="cta-box reveal"><h2>Siap bikin pencatatan lebih rapi?</h2><p>Gunakan REKAPINYU untuk membantu mengelola catatan keuangan toko dari input harian sampai laporan.</p><a class="btn btn-light" href="#paket"><i class="fa-solid fa-rocket"></i> Buka REKAPINYU</a></div></div></section>
+<section id="tentang" class="cta"><div class="container"><div class="cta-box reveal"><h2>Siap bikin pencatatan lebih rapi?</h2><p>Gunakan REKAPINYU untuk membantu mengelola catatan keuangan toko dari input harian sampai laporan.</p><a class="btn btn-light" href="https://rekapinyu.github.io/"><i class="fa-solid fa-rocket"></i> Buka REKAPINYU</a></div></div></section>
 
 <footer class="footer"><div class="container footer-inner"><span>© 2026 REKAPINYU — Keuangan Toko</span><span>Dibuat untuk pencatatan toko yang lebih praktis.</span></div></footer>
-</div>
-
-<!-- MAIN APP WRAPPER (Tampil ketika user berhasil login di Halaman Page) -->
-<div id="mainAppContainer" class="hidden min-h-screen flex flex-col md:flex-row bg-slate-100">
-    <!-- SIDEBAR -->
-    <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col justify-between border-r border-slate-800">
-        <div>
-            <div class="p-4 bg-slate-950/50 flex items-center gap-3 border-b border-slate-800">
-                <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-lg" id="userAvatar">T</div>
-                <div class="overflow-hidden">
-                    <h1 class="text-sm font-bold text-white truncate" id="userNameDisplay">Toko Berkah</h1>
-                    <p class="text-xs text-slate-400 truncate" id="userPhoneDisplay">08123456789</p>
-                </div>
-            </div>
-
-            <nav class="p-4 space-y-1">
-                <button onclick="switchTab('dashboard')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm text-left nav-btn bg-slate-800 text-white" id="nav-dashboard">
-                    <i class="fa-solid fa-chart-line w-5"></i> Dashboard
-                </button>
-                <button onclick="switchTab('kasbon')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm text-left nav-btn" id="nav-kasbon">
-                    <i class="fa-solid fa-hand-holding-dollar w-5"></i> Kasbon Pelanggan
-                </button>
-                <button onclick="switchTab('history')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm text-left nav-btn" id="nav-history">
-                    <i class="fa-solid fa-clock-rotate-left w-5"></i> Riwayat Transaksi
-                </button>
-                <button onclick="switchTab('monthly')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm text-left nav-btn" id="nav-monthly">
-                    <i class="fa-solid fa-calendar-days w-5"></i> Laporan Bulanan
-                </button>
-                <button onclick="switchTab('settings')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm text-left nav-btn" id="nav-settings">
-                    <i class="fa-solid fa-gear w-5"></i> Pengaturan
-                </button>
-            </nav>
-        </div>
-
-        <div class="p-4 border-t border-slate-800">
-            <button onclick="handleLogout()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors text-sm font-medium">
-                <i class="fa-solid fa-right-from-bracket"></i> Keluar
-            </button>
-        </div>
-    </aside>
-
-    <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
-        <!-- TAB: DASHBOARD -->
-        <section id="tab-dashboard" class="tab-content space-y-6">
-            <header class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Rekapitulasi Harian</h2>
-                    <p class="text-xs text-slate-500">Catat pendapatan dan belanja toko hari ini</p>
-                </div>
-            </header>
-
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
-                <form onsubmit="handleSaveDaily(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Pendapatan Hari Ini (Rp)</label>
-                            <input type="number" id="dailyRevenue" required placeholder="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Total Belanja Hari Ini (Rp)</label>
-                            <input type="number" id="dailyExpense" required placeholder="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Pengeluaran Lain-lain (Rp)</label>
-                            <input type="number" id="dailyOtherExpense" placeholder="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Set Profit (%)</label>
-                            <input type="number" id="profitPercentage" value="10" step="0.1" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                        </div>
-                    </div>
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                        Simpan Rekap Harian
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- TAB: KASBON -->
-        <section id="tab-kasbon" class="tab-content hidden space-y-6">
-            <header class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Pencatatan Kasbon</h2>
-                    <p class="text-xs text-slate-500">Kelola hutang dan kasbon pelanggan</p>
-                </div>
-            </header>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
-                <p class="text-sm text-slate-500">Modul kasbon aktif.</p>
-            </div>
-        </section>
-
-        <!-- TAB: HISTORY -->
-        <section id="tab-history" class="tab-content hidden space-y-6">
-            <header class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Riwayat Transaksi</h2>
-                    <p class="text-xs text-slate-500">Daftar rekap harian tersimpan</p>
-                </div>
-            </header>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
-                <p class="text-sm text-slate-500">Riwayat transaksi tersimpan secara otomatis pada penyimpanan lokal.</p>
-            </div>
-        </section>
-
-        <!-- TAB: MONTHLY -->
-        <section id="tab-monthly" class="tab-content hidden space-y-6">
-            <header class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Laporan Bulanan</h2>
-                    <p class="text-xs text-slate-500">Ringkasan estimasi performa bulanan</p>
-                </div>
-            </header>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
-                <p class="text-sm text-slate-500">Data laporan bulanan akan dikalkulasi otomatis dari rekap harian.</p>
-            </div>
-        </section>
-
-        <!-- TAB: SETTINGS -->
-        <section id="tab-settings" class="tab-content hidden space-y-6">
-            <header class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Pengaturan</h2>
-                    <p class="text-xs text-slate-500">Konfigurasi profil dan keamanan</p>
-                </div>
-            </header>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
-                <p class="text-sm text-slate-500">Pengaturan pengguna aktif.</p>
-            </div>
-        </section>
-    </main>
-</div>
 
 <script>
 // KONFIGURASI FIREBASE REALTIME DATABASE REKAPINYU
@@ -401,33 +263,61 @@ if (!firebase.apps.length) {
 }
 const db = firebase.database();
 
-// Pengecekan Sesi Login Saat Halaman Dimuat
+// LOGIKA PENGELOLAAN AKUN (LOGIN & REGISTER) TERHUBUNG DENGAN FIREBASE
 document.addEventListener('DOMContentLoaded', function () {
-  checkSessionState();
-
   const formLogin = document.getElementById('form-login');
   const formRegister = document.getElementById('form-register');
 
+  // FITUR LOGIN DENGAN VERIFIKASI FIREBASE REALTIME DATABASE
   if (formLogin) {
     formLogin.addEventListener('submit', function (e) {
       e.preventDefault();
       const phone = document.getElementById('login-phone').value.trim();
       const password = document.getElementById('login-password').value;
 
-      const registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
-      const user = registeredUsers.find(u => u.phone === phone && u.password === password);
-
-      if (user) {
-        localStorage.setItem('finance_active_session', JSON.stringify(user));
-        alert(`Selamat datang kembali, ${user.name}!`);
-        // Langsung tampilkan dashboard aplikasi tanpa redirect
-        renderAppView();
-      } else {
-        alert('Nomor HP atau kata sandi tidak cocok/belum terdaftar.');
+      if (!phone || !password) {
+        alert('Silakan isi nomor HP dan kata sandi.');
+        return;
       }
+
+      // Cek akun di node "users" Firebase Database
+      db.ref('users/' + phone).once('value')
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            if (userData.password === password) {
+              const activeUser = {
+                name: userData.name || userData.storeName || 'Pengguna Rekapinyu',
+                phone: phone,
+                password: password
+              };
+              localStorage.setItem('finance_active_session', JSON.stringify(activeUser));
+              alert(`Selamat datang kembali, ${activeUser.name}!`);
+              window.location.href = 'https://rekapinyu.github.io/';
+            } else {
+              alert('Kata sandi yang Anda masukkan salah.');
+            }
+          } else {
+            // Fallback cek ke localStorage jika database tidak mengembalikan hasil
+            const registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+            const localUser = registeredUsers.find(u => u.phone === phone && u.password === password);
+            if (localUser) {
+              localStorage.setItem('finance_active_session', JSON.stringify(localUser));
+              alert(`Selamat datang kembali, ${localUser.name}!`);
+              window.location.href = 'https://rekapinyu.github.io/';
+            } else {
+              alert('Nomor HP belum terdaftar atau kata sandi salah.');
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Firebase Login Error:", error);
+          alert('Terjadi kesalahan koneksi database. Silakan coba lagi.');
+        });
     });
   }
 
+  // FITUR PENDAFTARAN AKUN DENGAN PENYIMPANAN DI FIREBASE & LOCALSTORAGE
   if (formRegister) {
     formRegister.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -435,97 +325,40 @@ document.addEventListener('DOMContentLoaded', function () {
       const phone = document.getElementById('reg-phone').value.trim();
       const password = document.getElementById('reg-password').value;
 
-      let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
-      const existingUser = registeredUsers.find(u => u.phone === phone);
-      if (existingUser) {
-        alert('Nomor HP sudah terdaftar. Silakan gunakan form login di sebelah kiri.');
+      if (!name || !phone || !password) {
+        alert('Lengkapi seluruh data pendaftaran.');
         return;
       }
 
-      const newUser = {
+      // Simpan akun ke Firebase Realtime Database
+      db.ref('users/' + phone).set({
         name: name,
         phone: phone,
         password: password,
-        photo: ""
-      };
+        createdAt: new Date().toISOString()
+      }).then(() => {
+        const newUser = { name: name, phone: phone, password: password, photo: "" };
 
-      registeredUsers.push(newUser);
-      localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
+        let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+        registeredUsers.push(newUser);
+        localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
 
-      localStorage.setItem(`finance_history_desktop_${phone}`, JSON.stringify([]));
-      localStorage.setItem(`finance_pengeluaran_desktop_${phone}`, JSON.stringify([]));
-      localStorage.setItem(`finance_kasbon_desktop_${phone}`, JSON.stringify([]));
-      localStorage.setItem(`finance_backup_desktop_${phone}`, JSON.stringify([]));
+        localStorage.setItem(`finance_history_desktop_${phone}`, JSON.stringify([]));
+        localStorage.setItem(`finance_pengeluaran_desktop_${phone}`, JSON.stringify([]));
+        localStorage.setItem(`finance_kasbon_desktop_${phone}`, JSON.stringify([]));
+        localStorage.setItem(`finance_backup_desktop_${phone}`, JSON.stringify([]));
 
-      localStorage.setItem('finance_active_session', JSON.stringify(newUser));
+        localStorage.setItem('finance_active_session', JSON.stringify(newUser));
 
-      alert('Pendaftaran berhasil! Mengalihkan ke aplikasi...');
-      // Langsung tampilkan dashboard aplikasi tanpa redirect
-      renderAppView();
+        alert('Pendaftaran berhasil! Mengalihkan ke aplikasi...');
+        window.location.href = 'https://rekapinyu.github.io/';
+      }).catch((error) => {
+        console.error("Firebase Reg Error:", error);
+        alert('Gagal mendaftarkan akun ke server database. Silakan coba lagi.');
+      });
     });
   }
 });
-
-// Fungsi Pengecekan & Render Tampilan
-function checkSessionState() {
-  const activeSession = localStorage.getItem('finance_active_session');
-  if (activeSession) {
-    renderAppView();
-  } else {
-    renderLandingView();
-  }
-}
-
-function renderAppView() {
-  const activeSession = localStorage.getItem('finance_active_session');
-  if (activeSession) {
-    const user = JSON.parse(activeSession);
-    document.getElementById('userNameDisplay').innerText = user.name || 'Toko Berkah';
-    document.getElementById('userPhoneDisplay').innerText = user.phone || '';
-    document.getElementById('userAvatar').innerText = (user.name ? user.name.charAt(0) : 'T').toUpperCase();
-  }
-  
-  closeStatusModal();
-  document.getElementById('landingPageContainer').classList.add('hidden');
-  document.getElementById('mainAppContainer').classList.remove('hidden');
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-function renderLandingView() {
-  document.getElementById('mainAppContainer').classList.add('hidden');
-  document.getElementById('landingPageContainer').classList.remove('hidden');
-}
-
-function handleLogout() {
-  if (confirm('Apakah Anda yakin ingin keluar?')) {
-    localStorage.removeItem('finance_active_session');
-    renderLandingView();
-  }
-}
-
-// Navigasi Tab Aplikasi
-function switchTab(tabName) {
-  const tabs = document.querySelectorAll('.tab-content');
-  tabs.forEach(tab => tab.classList.add('hidden'));
-
-  const navBtns = document.querySelectorAll('.nav-btn');
-  navBtns.forEach(btn => btn.classList.remove('bg-slate-800', 'text-white'));
-
-  const activeTab = document.getElementById(`tab-${tabName}`);
-  if (activeTab) {
-    activeTab.classList.remove('hidden');
-  }
-
-  const activeBtn = document.getElementById(`nav-${tabName}`);
-  if (activeBtn) {
-    activeBtn.classList.add('bg-slate-800', 'text-white');
-  }
-}
-
-function handleSaveDaily(e) {
-  e.preventDefault();
-  alert('Data rekapitulasi harian berhasil disimpan.');
-}
 
 // Otomatis menampilkan Durasi Waktu Paket pada Form Perpanjang Paket
 function updateRenewDuration() {
