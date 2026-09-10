@@ -303,10 +303,11 @@ function handleRenewSubmit(e) {
   list.unshift(newTransaction);
   localStorage.setItem('rekapinyu_transactions', JSON.stringify(list));
 
-  // REKAPINYU INTEGRASI SUPERADMIN: simpan transaksi ke Firebase tanpa mengubah alur asli
-  if(typeof db!=='undefined' && db){
-    db.ref('rekapinyu_transactions/'+currentTxId).set(newTransaction).catch(err=>console.warn('Firebase transaksi:',err));
-  }
+  // REKAPINYU SUPERADMIN: kirim transaksi ke Firebase Realtime Database
+  // Tambahan ini tidak mengubah alur Login/Daftar maupun localStorage asli.
+  db.ref('rekapinyu_transactions/' + currentTxId).set(newTransaction)
+    .then(()=>console.log('SUPERADMIN RTDB: transaksi berhasil dikirim', currentTxId))
+    .catch(err=>console.error('SUPERADMIN RTDB: gagal mengirim transaksi', err));
 
   if(channel){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
@@ -373,10 +374,11 @@ function submitBuy(e){
   list.unshift(newTransaction);
   localStorage.setItem('rekapinyu_transactions', JSON.stringify(list));
 
-  // REKAPINYU INTEGRASI SUPERADMIN: simpan transaksi ke Firebase tanpa mengubah alur asli
-  if(typeof db!=='undefined' && db){
-    db.ref('rekapinyu_transactions/'+currentTxId).set(newTransaction).catch(err=>console.warn('Firebase transaksi:',err));
-  }
+  // REKAPINYU SUPERADMIN: kirim transaksi ke Firebase Realtime Database
+  // Tambahan ini tidak mengubah alur Login/Daftar maupun localStorage asli.
+  db.ref('rekapinyu_transactions/' + currentTxId).set(newTransaction)
+    .then(()=>console.log('SUPERADMIN RTDB: transaksi berhasil dikirim', currentTxId))
+    .catch(err=>console.error('SUPERADMIN RTDB: gagal mengirim transaksi', err));
 
   if(channel){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
@@ -420,14 +422,6 @@ function handleStatusUpdate(id, status){
   }
 }
 
-// REKAPINYU INTEGRASI SUPERADMIN: terima perubahan status langsung dari Firebase
-if(typeof db!=='undefined' && db){
-  db.ref('rekapinyu_transactions').on('child_changed', function(snapshot){
-    const tx=snapshot.val()||{};
-    if(tx.id) handleStatusUpdate(tx.id, tx.status);
-  });
-}
-
 if(channel){
   channel.onmessage = function(e){
     if(e.data && e.data.type === 'STATUS_UPDATE'){
@@ -441,6 +435,16 @@ window.addEventListener('storage', function(e){
     const data = JSON.parse(e.newValue);
     handleStatusUpdate(data.id, data.status);
   }
+});
+
+// REKAPINYU SUPERADMIN: terima perubahan status pembayaran langsung dari Firebase
+db.ref('rekapinyu_transactions').on('child_changed', function(snapshot){
+  const tx = snapshot.val() || {};
+  if(tx.id && tx.status){
+    handleStatusUpdate(tx.id, tx.status);
+  }
+}, function(err){
+  console.error('SUPERADMIN RTDB: listener status gagal', err);
 });
 </script>
 <script type="module">
