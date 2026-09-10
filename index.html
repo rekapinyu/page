@@ -20,6 +20,7 @@
 
 .status-modal-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.75);backdrop-filter:blur(8px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}.status-modal-overlay.show{display:flex}.status-modal-box{background:#fff;border-radius:24px;padding:40px 30px;max-width:440px;width:100%;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,0.3);animation:popupIn 0.3s ease-out}.spinner-ring{width:60px;height:60px;border:5px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite}.status-active-icon{width:70px;height:70px;border-radius:50%;background:#dcfce7;color:#16a34a;display:grid;place-items:center;font-size:32px;margin:0 auto 20px}.status-reject-icon{width:70px;height:70px;border-radius:50%;background:#fee2e2;color:#dc2626;display:grid;place-items:center;font-size:32px;margin:0 auto 20px}@keyframes spin{to{transform:rotate(360deg)}}@keyframes popupIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
 
+/* Styling Form Terintegrasi Firebase & Perpanjang Paket */
 .forms-container{margin-top:40px;display:grid;gap:35px}
 .form-card{background:#fff;border-radius:24px;border:1px solid #dfeaf5;padding:32px;box-shadow:0 15px 40px #10233f0d}
 .form-card h3{font-size:22px;color:#10233f;margin-bottom:8px;display:flex;align-items:center;gap:10px}
@@ -30,6 +31,7 @@
 .form-group input,.form-group select{width:100%;padding:12px 13px;border:1px solid #d8e3ee;border-radius:12px;outline:none;font:inherit}
 .form-group input:focus,.form-group select:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb14}
 
+/* CSS Tambahan Dari LoginApp */
 .auth-container {
   display: flex;
   width: 100%;
@@ -104,8 +106,12 @@
       </div>
     </div>
 
+    <!-- KEDUA FORM TEPAT DI BAWAH KOTAK HARGA PAKET -->
     <div class="forms-container reveal">
+      
+      <!-- DUKUNGAN INDEX LOGIN UNTUK PAGE (LOGIN & PENDAFTARAN) -->
       <div class="auth-container">
+        <!-- Kiri: Form Login -->
         <div class="auth-col login-section">
           <h2>Masuk Akun</h2>
           <p class="subtitle">Silakan login jika sudah memiliki akun</p>
@@ -123,6 +129,7 @@
           </form>
         </div>
 
+        <!-- Kanan: Form Pendaftaran -->
         <div class="auth-col register-section">
           <h2>Daftar Baru</h2>
           <p class="subtitle">Buat akun baru untuk mulai mencatat keuangan</p>
@@ -145,6 +152,7 @@
         </div>
       </div>
 
+      <!-- FORM 2: PERPANJANG PAKET -->
       <div class="form-card">
         <h3><i class="fa-solid fa-rotate" style="color:#0f766e;"></i> Perpanjang Paket Kamu</h3>
         <p class="subtitle">Lengkapi data di sebelah kiri dan scan QRIS di sebelah kanan untuk memperpanjang paket.</p>
@@ -244,18 +252,18 @@
 <footer class="footer"><div class="container footer-inner"><span>© 2026 REKAPINYU — Keuangan Toko</span><span>Dibuat untuk pencatatan toko yang lebih praktis.</span></div></footer>
 
 <script>
-// KONFIGURASI FIREBASE REALTIME DATABASE REKAPINYU (SESUAI REGION ASIA SOUTHEAST)
+// KONFIGURASI FIREBASE REALTIME DATABASE REKAPINYU
 const firebaseConfig = {
-  databaseURL: "https://rekapinyu-default-rtdb.asia-southeast1.firebasedatabase.app"
+  databaseURL: "https://rekapinyu-default-rtdb.firebaseio.com"
 };
 
-// Inisialisasi Firebase jika belum
+// Inisialisasi Firebase jika belum diinisialisasi
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.database();
 
-// LOGIKA LOGIN & REGISTER
+// LOGIKA UNTUK PAGE (LOGIN & REGISTER)
 document.addEventListener('DOMContentLoaded', function () {
   const formLogin = document.getElementById('form-login');
   const formRegister = document.getElementById('form-register');
@@ -266,44 +274,42 @@ document.addEventListener('DOMContentLoaded', function () {
       const phone = document.getElementById('login-phone').value.trim();
       const password = document.getElementById('login-password').value;
 
-      if (!phone || !password) {
-        alert('Silakan isi nomor HP dan kata sandi.');
-        return;
-      }
-
-      // Cek ke Firebase Realtime Database
+      // Cek langsung ke database Firebase
       db.ref('users/' + phone).once('value')
         .then((snapshot) => {
           if (snapshot.exists()) {
             const userData = snapshot.val();
+            // Verifikasi Kata Sandi
             if (userData.password === password) {
               const activeUser = {
-                name: userData.name || userData.storeName || 'Pengguna Rekapinyu',
+                name: userData.name || userData.nama || 'Pengguna',
                 phone: phone,
-                password: password
+                password: password,
+                photo: userData.photo || ''
               };
               localStorage.setItem('finance_active_session', JSON.stringify(activeUser));
               alert(`Selamat datang kembali, ${activeUser.name}!`);
               window.location.href = 'https://rekapinyu.github.io/';
             } else {
-              alert('Kata sandi yang Anda masukkan salah.');
+              alert('Kata sandi salah. Silakan coba lagi.');
             }
           } else {
-            // Fallback jika tidak ada di DB
+            // Jika tidak ada di Firebase, cek cadangan di LocalStorage
             const registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
-            const localUser = registeredUsers.find(u => u.phone === phone && u.password === password);
-            if (localUser) {
-              localStorage.setItem('finance_active_session', JSON.stringify(localUser));
-              alert(`Selamat datang kembali, ${localUser.name}!`);
+            const user = registeredUsers.find(u => u.phone === phone && u.password === password);
+
+            if (user) {
+              localStorage.setItem('finance_active_session', JSON.stringify(user));
+              alert(`Selamat datang kembali, ${user.name}!`);
               window.location.href = 'https://rekapinyu.github.io/';
             } else {
-              alert('Nomor HP belum terdaftar atau kata sandi salah.');
+              alert('Nomor HP atau kata sandi tidak cocok / belum terdaftar.');
             }
           }
         })
         .catch((error) => {
-          console.error("Firebase Login Error:", error);
-          alert('Terjadi kesalahan koneksi database. Silakan coba lagi.');
+          console.error(error);
+          alert('Terjadi kesalahan koneksi ke database. Silakan coba lagi.');
         });
     });
   }
@@ -315,40 +321,39 @@ document.addEventListener('DOMContentLoaded', function () {
       const phone = document.getElementById('reg-phone').value.trim();
       const password = document.getElementById('reg-password').value;
 
-      if (!name || !phone || !password) {
-        alert('Lengkapi seluruh data pendaftaran.');
-        return;
-      }
-
-      db.ref('users/' + phone).set({
+      const newUser = {
         name: name,
         phone: phone,
         password: password,
-        createdAt: new Date().toISOString()
-      }).then(() => {
-        const newUser = { name: name, phone: phone, password: password, photo: "" };
+        photo: ""
+      };
 
-        let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
-        registeredUsers.push(newUser);
-        localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
+      // Simpan ke Firebase Database
+      db.ref('users/' + phone).set(newUser)
+        .then(() => {
+          let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+          registeredUsers.push(newUser);
+          localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
 
-        localStorage.setItem(`finance_history_desktop_${phone}`, JSON.stringify([]));
-        localStorage.setItem(`finance_pengeluaran_desktop_${phone}`, JSON.stringify([]));
-        localStorage.setItem(`finance_kasbon_desktop_${phone}`, JSON.stringify([]));
-        localStorage.setItem(`finance_backup_desktop_${phone}`, JSON.stringify([]));
+          localStorage.setItem(`finance_history_desktop_${phone}`, JSON.stringify([]));
+          localStorage.setItem(`finance_pengeluaran_desktop_${phone}`, JSON.stringify([]));
+          localStorage.setItem(`finance_kasbon_desktop_${phone}`, JSON.stringify([]));
+          localStorage.setItem(`finance_backup_desktop_${phone}`, JSON.stringify([]));
 
-        localStorage.setItem('finance_active_session', JSON.stringify(newUser));
+          localStorage.setItem('finance_active_session', JSON.stringify(newUser));
 
-        alert('Pendaftaran berhasil! Mengalihkan ke aplikasi...');
-        window.location.href = 'https://rekapinyu.github.io/';
-      }).catch((error) => {
-        console.error("Firebase Reg Error:", error);
-        alert('Gagal mendaftarkan akun ke server database. Silakan coba lagi.');
-      });
+          alert('Pendaftaran berhasil! Mengalihkan ke aplikasi...');
+          window.location.href = 'https://rekapinyu.github.io/';
+        })
+        .catch((error) => {
+          console.error(error);
+          alert('Gagal mendaftar ke database. Periksa koneksi internet Anda.');
+        });
     });
   }
 });
 
+// Otomatis menampilkan Durasi Waktu Paket pada Form Perpanjang Paket
 function updateRenewDuration() {
   const select = document.getElementById('renewPackageSelect');
   const selectedOption = select.options[select.selectedIndex];
@@ -359,6 +364,7 @@ function updateRenewDuration() {
   document.getElementById('renewAmountNote').textContent = 'Total: ' + price;
 }
 
+// Handler Submit Form Perpanjang Paket ke Superadmin
 function handleRenewSubmit(e) {
   e.preventDefault();
 
@@ -454,6 +460,7 @@ function submitBuy(e){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
   }
 
+  // Reset tampilan modal ke kondisi awal (menunggu)
   document.getElementById('statusSpinner').style.display = 'block';
   document.getElementById('statusActiveIcon').style.display = 'none';
   document.getElementById('statusRejectIcon').style.display = 'none';
