@@ -408,5 +408,70 @@ window.addEventListener('storage', function(e){
   }
 });
 </script>
+  <script>
+  // Mengintegrasikan Form Pendaftaran IndexPage dengan IndexApp
+  document.addEventListener('DOMContentLoaded', function () {
+    // Sesuaikan ID form pendaftaran di IndexPage Anda (misal: 'register-form' atau 'form-pendaftaran')
+    const registerFormPage = document.querySelector('form') || document.getElementById('register-form');
+
+    if (registerFormPage) {
+      registerFormPage.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Ambil input dari Form Pendaftaran IndexPage
+        // (Sesuaikan selector ID/Name input berikut sesuai elemen di IndexPage Anda)
+        const nameInput = document.querySelector('input[type="text"][placeholder*="Nama"], #reg-name, #nama');
+        const phoneInput = document.querySelector('input[type="tel"], input[type="text"][placeholder*="HP"], #reg-phone, #phone');
+        const passwordInput = document.querySelector('input[type="password"], #reg-password, #password');
+
+        const name = nameInput ? nameInput.value.trim() : '';
+        const phone = phoneInput ? phoneInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value : '';
+
+        if (!name || !phone || !password) {
+          alert('Mohon lengkapi semua bidang pendaftaran.');
+          return;
+        }
+
+        // 1. Ambil database pendaftar IndexApp yang ada di LocalStorage
+        let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+
+        // 2. Cek apakah nomor HP sudah terdaftar
+        const existingUser = registeredUsers.find(u => u.phone === phone);
+        if (existingUser) {
+          alert('Nomor HP sudah terdaftar! Anda akan dialihkan ke halaman login.');
+          window.location.href = 'indexApp.html';
+          return;
+        }
+
+        // 3. Buat Objek User baru yang sesuai dengan struktur data IndexApp
+        const newUser = {
+          name: name,
+          phone: phone,
+          password: password,
+          photo: ""
+        };
+
+        // 4. Simpan User ke database utama IndexApp
+        registeredUsers.push(newUser);
+        localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
+
+        // 5. Inisialisasi storage terpisah per-user (mengikuti logika IndexApp)
+        localStorage.setItem(`finance_history_desktop_${phone}`, JSON.stringify([]));
+        localStorage.setItem(`finance_pengeluaran_desktop_${phone}`, JSON.stringify([]));
+        localStorage.setItem(`finance_kasbon_desktop_${phone}`, JSON.stringify([]));
+        localStorage.setItem(`finance_backup_desktop_${phone}`, JSON.stringify([]));
+
+        // 6. Set Active Session agar Pengguna Otomatis Login saat masuk IndexApp
+        localStorage.setItem('finance_active_session', JSON.stringify(newUser));
+
+        alert('Pendaftaran Berhasil! Mengalihkan ke Aplikasi...');
+
+        // 7. Arahkan pengguna ke IndexApp
+        window.location.href = 'indexApp.html';
+      });
+    }
+  });
+</script>
 </body>
 </html>
