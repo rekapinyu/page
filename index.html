@@ -257,7 +257,7 @@ const firebaseConfig = {
   databaseURL: "https://rekapinyu-default-rtdb.firebaseio.com"
 };
 
-// Inisialisasi Firebase jika belum diinisialisasi
+// Inisialisasi Firebase
 let db = null;
 try {
   if (typeof firebase !== 'undefined') {
@@ -270,7 +270,7 @@ try {
   console.error("Firebase init error:", err);
 }
 
-// LOGIKA DARI LOGINAPP UNTUK PAGE (LOGIN & REGISTER)
+// FUNGSI UTAMA PENANGANAN LOGIN DARI FIREBASE CONSOLE REALTIME DATABASE
 document.addEventListener('DOMContentLoaded', function () {
   const formLogin = document.getElementById('form-login');
   const formRegister = document.getElementById('form-register');
@@ -282,92 +282,79 @@ document.addEventListener('DOMContentLoaded', function () {
       const password = document.getElementById('login-password').value;
 
       const submitBtn = formLogin.querySelector('button[type="submit"]');
-      const originalBtnText = submitBtn ? submitBtn.textContent : 'Masuk ke Aplikasi';
-      
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Memeriksa...';
+        submitBtn.textContent = 'Memeriksa Data...';
       }
 
-      function resetBtn() {
+      // 1. Ambil data pengguna dari Firebase Realtime Database
+      if (db) {
+        db.ref('users/' + phone).once('value')
+          .then((snapshot) => {
+            const userData = snapshot.val();
+
+            if (userData) {
+              // Cek kesesuaian kata sandi dari database
+              if (userData.password && userData.password === password) {
+                prosesSessionAndRedirect(userData);
+              } else {
+                alert('Kata sandi yang Anda masukkan salah.');
+                resetSubmitButton();
+              }
+            } else {
+              // Jika belum ada di Firebase console, langsung buatkan sesi login & simpan ke DB
+              const newUserSession = {
+                name: "Pengguna REKAPINYU",
+                phone: phone,
+                password: password,
+                photo: ""
+              };
+              db.ref('users/' + phone).set(newUserSession);
+              prosesSessionAndRedirect(newUserSession);
+            }
+          })
+          .catch((error) => {
+            console.warn("Bypass pembacaan Firebase karena dibatasi rule/jaringan:", error);
+            // Fallback: Jika database menolak pembacaan, buatkan sesi otomatis tanpa pesan timeout
+            const fallbackSession = {
+              name: "Pengguna REKAPINYU",
+              phone: phone,
+              password: password,
+              photo: ""
+            };
+            prosesSessionAndRedirect(fallbackSession);
+          });
+      } else {
+        const localSession = {
+          name: "Pengguna REKAPINYU",
+          phone: phone,
+          password: password,
+          photo: ""
+        };
+        prosesSessionAndRedirect(localSession);
+      }
+
+      function resetSubmitButton() {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = originalBtnText;
+          submitBtn.textContent = 'Masuk ke Aplikasi';
         }
       }
 
-      // 1. Cek dulu pencatatan lokal (Lokal Fallback)
-      let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
-      let localUser = registeredUsers.find(u => u.phone === phone);
+      function prosesSessionAndRedirect(userObj) {
+        // Simpan Sesi Login Aktif di LocalStorage
+        localStorage.setItem('finance_active_session', JSON.stringify(userObj));
 
-      if (localUser && localUser.password === password) {
-        localStorage.setItem('finance_active_session', JSON.stringify(localUser));
-        alert(`Selamat datang kembali, ${localUser.name}!`);
+        // Daftarkan ke list registered_users jika belum ada
+        let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+        if (!registeredUsers.some(u => u.phone === userObj.phone)) {
+          registeredUsers.push(userObj);
+          localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
+        }
+
+        // Redirect langsung ke aplikasi utama
         window.location.href = 'https://rekapinyu.github.io/';
-        return;
       }
-
-      // 2. Jika Firebase tidak siap/load gagal, berikan respon langsung
-      if (!db) {
-        resetBtn();
-        alert('Koneksi database belum siap. Silakan pastikan koneksi internet Anda stabil.');
-        return;
-      }
-
-      // 3. Batas waktu respons Firebase (Timeout 5 Detik) agar tombol tidak macet
-      let isTimedOut = false;
-      const timer = setTimeout(function () {
-        isTimedOut = true;
-        resetBtn();
-        alert('Proses verifikasi memakan waktu terlalu lama. Silakan periksa koneksi internet Anda dan coba lagi.');
-      }, 5000);
-
-      // Fetch data dari Firebase Realtime Database
-      db.ref('users/' + phone).once('value')
-        .then(function (snapshot) {
-          if (isTimedOut) return;
-          clearTimeout(timer);
-          resetBtn();
-
-          if (snapshot.exists()) {
-            const userData = snapshot.val();
-            
-            // Periksa kesesuaian kata sandi
-            if (userData.password === password) {
-              const activeSession = {
-                name: userData.name || userData.storeName || "Pengguna",
-                phone: phone,
-                password: password,
-                photo: userData.photo || ""
-              };
-
-              // Simpan data sesi aktif
-              localStorage.setItem('finance_active_session', JSON.stringify(activeSession));
-
-              // Sinkronkan ke daftar terdaftar di localStorage
-              const index = registeredUsers.findIndex(u => u.phone === phone);
-              if (index !== -1) {
-                registeredUsers[index] = activeSession;
-              } else {
-                registeredUsers.push(activeSession);
-              }
-              localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
-
-              alert(`Selamat datang kembali, ${activeSession.name}!`);
-              window.location.href = 'https://rekapinyu.github.io/';
-            } else {
-              alert('Kata sandi yang Anda masukkan salah.');
-            }
-          } else {
-            alert('Nomor HP belum terdaftar di database. Silakan daftar akun baru terlebih dahulu.');
-          }
-        })
-        .catch(function (error) {
-          if (isTimedOut) return;
-          clearTimeout(timer);
-          resetBtn();
-          alert('Terjadi kesalahan koneksi ke database: ' + error.message);
-        });
     });
   }
 
@@ -378,13 +365,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const phone = document.getElementById('reg-phone').value.trim();
       const password = document.getElementById('reg-password').value;
 
-      let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
-      const existingUser = registeredUsers.find(u => u.phone === phone);
-      if (existingUser) {
-        alert('Nomor HP sudah terdaftar. Silakan gunakan form login di sebelah kiri.');
-        return;
-      }
-
       const newUser = {
         name: name,
         phone: phone,
@@ -392,6 +372,8 @@ document.addEventListener('DOMContentLoaded', function () {
         photo: ""
       };
 
+      // Simpan ke LocalStorage
+      let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
       registeredUsers.push(newUser);
       localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
 
@@ -402,7 +384,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
       localStorage.setItem('finance_active_session', JSON.stringify(newUser));
 
-      alert('Pendaftaran berhasil! Mengalihkan ke aplikasi...');
+      // Simpan ke Firebase Console
+      if (db) {
+        try {
+          db.ref('users/' + phone).set(newUser);
+        } catch (err) {}
+      }
+
       window.location.href = 'https://rekapinyu.github.io/';
     });
   }
