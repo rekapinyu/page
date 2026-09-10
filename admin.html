@@ -1,358 +1,493 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Superadmin — REKAPINYU</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;color:#0f172a;display:flex;min-height:100vh}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Notifikasi</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-/* Sidebar Sticky */
-.sidebar{
-  width:260px;
-  background:#0f172a;
-  color:#fff;
-  padding:24px 16px;
-  display:flex;
-  flex-direction:column;
-  gap:24px;
-  position:sticky;
-  top:0;
-  height:100vh;
-  overflow-y:auto;
-  flex-shrink:0;
-}
-.sidebar-brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:18px;color:#38bdf8;padding:0 8px}
-.sidebar-menu{display:flex;flex-direction:column;gap:6px;list-style:none}
-.sidebar-menu a{display:flex;align-items:center;gap:12px;padding:12px 14px;color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;border-radius:10px;transition:.2s}
-.sidebar-menu a:hover,.sidebar-menu a.active{background:#1e293b;color:#38bdf8}
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-/* Main Content */
-.main-content{flex:1;padding:32px;overflow-y:auto}
-.header-page{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
-.header-page h1{font-size:24px;font-weight:800;color:#0f172a}
-.header-page p{font-size:14px;color:#64748b;margin-top:4px}
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      display: flex;
+      min-height: 100vh;
+    }
 
-/* Metrics / Summary */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{background:#fff;padding:20px;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.03)}
-.stat-card .label{font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px}
-.stat-card .value{font-size:26px;font-weight:800;color:#0f172a;margin-top:8px}
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: 260px;
+      background-color: #0f172a;
+      color: #fff;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      flex-shrink: 0;
+    }
 
-/* Section Wrapper */
-.content-section{background:#fff;border-radius:18px;border:1px solid #e2e8f0;padding:24px;box-shadow:0 4px 15px rgba(0,0,0,0.02);margin-bottom:28px}
-.section-title{font-size:18px;font-weight:800;color:#0f172a;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 18px;
+      color: #38bdf8;
+      padding: 0 8px;
+    }
 
-/* Controls & Filter */
-.table-controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;flex-wrap:wrap}
-.search-box{position:relative;flex:1;max-width:320px}
-.search-box input{width:100%;padding:10px 14px 10px 38px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;font-size:13px;outline:none}
-.search-box i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px}
-.filter-group{display:flex;gap:8px}
-.filter-btn{padding:8px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;font-size:12px;font-weight:700;color:#475569;cursor:pointer;transition:.2s}
-.filter-btn.active{background:#0284c7;color:#fff;border-color:#0284c7}
+    .sidebar-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-/* Table Style */
-.table-wrapper{overflow-x:auto}
-table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}
-th{background:#f8fafc;padding:12px 16px;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0;white-space:nowrap}
-td{padding:14px 16px;border-bottom:1px solid #f1f5f9;color:#334155}
-tr:hover{background:#f8fafc}
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
 
-/* Status Badges */
-.badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;display:inline-block}
-.badge-pending{background:#fef3c7;color:#d97706}
-.badge-approved{background:#dcfce7;color:#15803d}
-.badge-rejected{background:#fee2e2;color:#b91c1c}
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+      background-color: #1e293b;
+      color: #38bdf8;
+    }
 
-/* Buttons */
-.btn-action{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s}
-.btn-approve{background:#16a34a;color:#fff}
-.btn-approve:hover{background:#15803d}
-.btn-reject{background:#dc2626;color:#fff}
-.btn-reject:hover{background:#b91c1c}
+    /* ================= MAIN CONTENT ================= */
+    .main-content {
+      flex: 1;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-/* User Management Cards Grid */
-.user-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:16px}
-.user-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;position:relative}
-.user-card-header{display:flex;justify-content:space-between;align-items:flex-start}
-.user-card-title{font-size:16px;font-weight:800;color:#0f172a}
-.user-card-sub{font-size:12px;color:#64748b}
-.user-card-pkg{display:inline-flex;align-items:center;gap:6px;background:#e0f2fe;color:#0369a1;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:700}
-.user-card-countdown{margin-top:6px;padding:10px;background:#fff;border:1px dashed #cbd5e1;border-radius:10px;text-align:center}
-.countdown-val{font-size:20px;font-weight:800;color:#0284c7}
-.countdown-lbl{font-size:11px;color:#64748b;font-weight:600}
+    .header-page h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0f172a;
+    }
 
-.empty-state{text-align:center;padding:30px;color:#94a3b8;font-size:13px}
+    .header-page p {
+      font-size: 14px;
+      color: #64748b;
+      margin-top: 4px;
+    }
 
-@media(max-width:768px){
-  body{flex-direction:column}
-  .sidebar{width:100%;height:auto;position:relative}
-  .main-content{padding:16px}
-}
-</style>
+    /* ================= 3 KOTAK GRID (STICKY) ================= */
+    .sticky-grid-container {
+      position: sticky;
+      top: 16px; /* Jarak dari atas saat sticky */
+      z-index: 100;
+      background-color: #f1f5f9; /* Sama dengan latar belakang agar rapat */
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-info .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .stat-info .value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .icon-masuk { background-color: #e0f2fe; color: #0284c7; }
+    .icon-menunggu { background-color: #fef3c7; color: #d97706; }
+    .icon-sukses { background-color: #dcfce7; color: #16a34a; }
+
+    /* ================= DAFTAR LIST PANJANG ================= */
+    .list-container {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      padding: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .list-header {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+
+    .transaction-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border: 1px solid #f1f5f9;
+      background-color: #fafafa;
+      border-radius: 12px;
+      transition: background-color 0.2s;
+    }
+
+    .transaction-item:hover {
+      background-color: #f8fafc;
+    }
+
+    .user-details {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background-color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .user-info .name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .user-info .meta {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .item-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .amount {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      text-align: right;
+    }
+
+    /* TOMBOL STATUS */
+    .btn-status {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: default;
+    }
+
+    .btn-menunggu {
+      background-color: #fef3c7;
+      color: #b45309;
+    }
+
+    .btn-sukses {
+      background-color: #dcfce7;
+      color: #15803d;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 900px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<!-- Sidebar Sticky -->
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <i class="fa-solid fa-shield-halved"></i> SUPERADMIN
-  </div>
-  <ul class="sidebar-menu">
-    <li><a href="#transaksiSection" class="active"><i class="fa-solid fa-receipt"></i> Transaksi Masuk</a></li>
-    <li><a href="#usersSection"><i class="fa-solid fa-users"></i> Pengguna Terdaftar</a></li>
-  </ul>
-</aside>
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <i class="fa-solid fa-layer-group"></i> MY DASHBOARD
+    </div>
+    <ul class="sidebar-menu">
+      <li>
+        <a href="#notifikasi" class="active">
+          <i class="fa-solid fa-bell"></i> Notifikasi
+        </a>
+      </li>
+      <li>
+        <a href="#history">
+          <i class="fa-solid fa-clock-rotate-left"></i> History
+        </a>
+      </li>
+      <li>
+        <a href="#pengguna">
+          <i class="fa-solid fa-users"></i> Pengguna
+        </a>
+      </li>
+    </ul>
+  </aside>
 
-<!-- Main Area -->
-<main class="main-content">
-  <div class="header-page">
-    <div>
-      <h1>Kelola Transaksi &amp; Pengguna</h1>
-      <p>Verifikasi pembayaran QRIS dan pantau paket pengguna yang aktif.</p>
-    </div>
-  </div>
-
-  <!-- Summary Cards -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="label">Total Transaksi</div>
-      <div class="value" id="statTotal">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Menunggu Konfirmasi</div>
-      <div class="value" id="statPending" style="color:#d97706;">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Pengguna Aktif</div>
-      <div class="value" id="statActive" style="color:#16a34a;">0</div>
-    </div>
-  </div>
-
-  <!-- Transaksi Section -->
-  <section class="content-section" id="transaksiSection">
-    <div class="section-title">
-      <i class="fa-solid fa-file-invoice-dollar" style="color:#0284c7;"></i> Data Transaksi Pembayaran
+  <!-- MAIN CONTENT AREA -->
+  <main class="main-content">
+    <div class="header-page">
+      <h1>Notifikasi Transaksi</h1>
+      <p>Pantau semua transaksi terbaru pengguna secara real-time.</p>
     </div>
 
-    <div class="table-controls">
-      <div class="search-box">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="searchInput" oninput="filterTable()" placeholder="Cari nama toko / pemilik...">
-      </div>
-      <div class="filter-group">
-        <button class="filter-btn active" onclick="setFilter('ALL', this)">Semua</button>
-        <button class="filter-btn" onclick="setFilter('MENUNGGU', this)">Menunggu</button>
-        <button class="filter-btn" onclick="setFilter('DIKONFIRMASI', this)">Dikonfirmasi</button>
-        <button class="filter-btn" onclick="setFilter('DITOLAK', this)">Ditolak</button>
-      </div>
-    </div>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Waktu</th>
-            <th>ID Transaksi</th>
-            <th>Nama Toko</th>
-            <th>Pemilik</th>
-            <th>Paket</th>
-            <th>Durasi</th>
-            <th>Total Bayar</th>
-            <th>Status</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="transactionTableBody">
-          <!-- Render via JS -->
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- Manajemen Pengguna Terdaftar Section -->
-  <section class="content-section" id="usersSection">
-    <div class="section-title">
-      <i class="fa-solid fa-users-gear" style="color:#0284c7;"></i> Manajemen Pengguna Terdaftar &amp; Masa Aktif Paket
-    </div>
-    <div id="activeUsersGrid" class="user-cards-grid">
-      <!-- Render kartu pengguna terdaftar via JS -->
-    </div>
-  </section>
-</main>
-
-<script>
-const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('rekapinyu_payment_channel') : null;
-let currentFilter = 'ALL';
-
-function getTransactions(){
-  return JSON.parse(localStorage.getItem('rekapinyu_transactions') || '[]');
-}
-
-function saveTransactions(data){
-  localStorage.setItem('rekapinyu_transactions', JSON.stringify(data));
-}
-
-function parseDurationDays(durasiStr){
-  if(!durasiStr) return 30;
-  if(durasiStr.includes('1 Bulan')) return 30;
-  if(durasiStr.includes('3 Bulan')) return 90;
-  if(durasiStr.includes('6 Bulan')) return 180;
-  if(durasiStr.includes('12 Bulan')) return 365;
-  return 30;
-}
-
-function renderStats(list){
-  document.getElementById('statTotal').textContent = list.length;
-  document.getElementById('statPending').textContent = list.filter(x => x.status === 'MENUNGGU').length;
-  document.getElementById('statActive').textContent = list.filter(x => x.status === 'DIKONFIRMASI').length;
-}
-
-function renderTable(){
-  const list = getTransactions();
-  renderStats(list);
-
-  const tbody = document.getElementById('transactionTableBody');
-  const searchVal = document.getElementById('searchInput').value.toLowerCase();
-
-  const filtered = list.filter(item => {
-    const matchStatus = currentFilter === 'ALL' || item.status === currentFilter;
-    const matchSearch = (item.storeName || '').toLowerCase().includes(searchVal) ||
-                        (item.ownerName || '').toLowerCase().includes(searchVal) ||
-                        (item.id || '').toLowerCase().includes(searchVal);
-    return matchStatus && matchSearch;
-  });
-
-  if(filtered.length === 0){
-    tbody.innerHTML = `<tr><td colspan="9" class="empty-state">Tidak ada data transaksi ditemukan</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = filtered.map(item => {
-    const dateFormatted = item.timestamp ? new Date(item.timestamp).toLocaleString('id-ID') : '-';
-    let badgeClass = 'badge-pending';
-    if(item.status === 'DIKONFIRMASI') badgeClass = 'badge-approved';
-    if(item.status === 'DITOLAK') badgeClass = 'badge-rejected';
-
-    let actionBtns = '-';
-    if(item.status === 'MENUNGGU'){
-      actionBtns = `
-        <button class="btn-action btn-approve" onclick="updateStatus('${item.id}', 'DIKONFIRMASI')"><i class="fa-solid fa-check"></i> Konfirmasi</button>
-        <button class="btn-action btn-reject" onclick="updateStatus('${item.id}', 'DITOLAK')"><i class="fa-solid fa-xmark"></i> Batalkan Paket</button>
-      `;
-    }
-
-    return `
-      <tr>
-        <td>${dateFormatted}</td>
-        <td><strong>${item.id}</strong></td>
-        <td>${item.storeName}</td>
-        <td>${item.ownerName}</td>
-        <td>${item.packageName}</td>
-        <td>${item.duration}</td>
-        <td>${item.amount}</td>
-        <td><span class="badge ${badgeClass}">${item.status}</span></td>
-        <td>${actionBtns}</td>
-      </tr>
-    `;
-  }).join('');
-
-  renderActiveUsers(list);
-}
-
-function renderActiveUsers(list){
-  const userGrid = document.getElementById('activeUsersGrid');
-  const confirmedList = list.filter(x => x.status === 'DIKONFIRMASI');
-
-  if(confirmedList.length === 0){
-    userGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">Belum ada pengguna dengan paket aktif.</div>`;
-    return;
-  }
-
-  const now = new Date();
-
-  userGrid.innerHTML = confirmedList.map(item => {
-    const totalDays = parseDurationDays(item.duration);
-    const startDate = new Date(item.timestamp || Date.now());
-    const endDate = new Date(startDate.getTime() + totalDays * 24 * 60 * 60 * 1000);
-    
-    const diffTime = endDate - now;
-    const remainingDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-
-    return `
-      <div class="user-card">
-        <div class="user-card-header">
-          <div>
-            <div class="user-card-title">${item.storeName}</div>
-            <div class="user-card-sub"><i class="fa-solid fa-user"></i> ${item.ownerName}</div>
+    <!-- 3 KOTAK GRID STICKY -->
+    <div class="sticky-grid-container">
+      <div class="stats-grid">
+        <!-- Grid 1: Transaksi Masuk -->
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="label">Transaksi Masuk</div>
+            <div class="value">128</div>
           </div>
-          <span class="badge badge-approved">Aktif</span>
+          <div class="stat-icon icon-masuk">
+            <i class="fa-solid fa-inbox"></i>
+          </div>
         </div>
-        <div>
-          <span class="user-card-pkg"><i class="fa-solid fa-box"></i> ${item.packageName} (${item.duration})</span>
+
+        <!-- Grid 2: Transaksi Menunggu -->
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="label">Transaksi Menunggu</div>
+            <div class="value">14</div>
+          </div>
+          <div class="stat-icon icon-menunggu">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
         </div>
-        <div class="user-card-countdown">
-          <div class="countdown-val">${remainingDays} Hari</div>
-          <div class="countdown-lbl">Sisa Masa Aktif Paket</div>
+
+        <!-- Grid 3: Transaksi Sukses -->
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="label">Transaksi Sukses</div>
+            <div class="value">114</div>
+          </div>
+          <div class="stat-icon icon-sukses">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
         </div>
       </div>
-    `;
-  }).join('');
-}
+    </div>
 
-function updateStatus(id, newStatus){
-  let list = getTransactions();
-  const index = list.findIndex(x => x.id === id);
-  if(index !== -1){
-    list[index].status = newStatus;
-    saveTransactions(list);
+    <!-- DAFTAR LIST PANJANG -->
+    <div class="list-container">
+      <div class="list-header">Daftar Transaksi Terbaru</div>
+      <div class="transaction-list">
 
-    // Kirim sinyal via BroadcastChannel
-    if(channel){
-      channel.postMessage({ type: 'STATUS_UPDATE', id: id, status: newStatus });
-    }
+        <!-- Item 1 - Menunggu -->
+        <div class="transaction-item">
+          <div class="user-details">
+            <div class="avatar">AS</div>
+            <div class="user-info">
+              <div class="name">Ahmad Subagja</div>
+              <div class="meta">Pembelian Paket Basic • Baru Saja</div>
+            </div>
+          </div>
+          <div class="item-right">
+            <div class="amount">Rp 150.000</div>
+            <span class="btn-status btn-menunggu">
+              <i class="fa-solid fa-clock"></i> Menunggu
+            </span>
+          </div>
+        </div>
 
-    // Backup sinyal via LocalStorage event
-    localStorage.setItem('rekapinyu_status_update', JSON.stringify({ id: id, status: newStatus, time: Date.now() }));
+        <!-- Item 2 - Sukses -->
+        <div class="transaction-item">
+          <div class="user-details">
+            <div class="avatar">RP</div>
+            <div class="user-info">
+              <div class="name">Rina Permata</div>
+              <div class="meta">Pembelian Paket Pro • 5 menit lalu</div>
+            </div>
+          </div>
+          <div class="item-right">
+            <div class="amount">Rp 350.000</div>
+            <span class="btn-status btn-sukses">
+              <i class="fa-solid fa-check"></i> Sukses
+            </span>
+          </div>
+        </div>
 
-    renderTable();
-  }
-}
+        <!-- Item 3 - Menunggu -->
+        <div class="transaction-item">
+          <div class="user-details">
+            <div class="avatar">BW</div>
+            <div class="user-info">
+              <div class="name">Budi Wijaya</div>
+              <div class="meta">Pembelian Paket Basic • 12 menit lalu</div>
+            </div>
+          </div>
+          <div class="item-right">
+            <div class="amount">Rp 150.000</div>
+            <span class="btn-status btn-menunggu">
+              <i class="fa-solid fa-clock"></i> Menunggu
+            </span>
+          </div>
+        </div>
 
-function setFilter(status, btnEl){
-  currentFilter = status;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btnEl.classList.add('active');
-  renderTable();
-}
+        <!-- Item 4 - Sukses -->
+        <div class="transaction-item">
+          <div class="user-details">
+            <div class="avatar">DN</div>
+            <div class="user-info">
+              <div class="name">Dina Nurdiana</div>
+              <div class="meta">Pembelian Paket Enterprise • 25 menit lalu</div>
+            </div>
+          </div>
+          <div class="item-right">
+            <div class="amount">Rp 750.000</div>
+            <span class="btn-status btn-sukses">
+              <i class="fa-solid fa-check"></i> Sukses
+            </span>
+          </div>
+        </div>
 
-function filterTable(){
-  renderTable();
-}
+        <!-- Item 5 - Sukses -->
+        <div class="transaction-item">
+          <div class="user-details">
+            <div class="avatar">EK</div>
+            <div class="user-info">
+              <div class="name">Eko Kurniawan</div>
+              <div class="meta">Pembelian Paket Pro • 1 jam lalu</div>
+            </div>
+          </div>
+          <div class="item-right">
+            <div class="amount">Rp 350.000</div>
+            <span class="btn-status btn-sukses">
+              <i class="fa-solid fa-check"></i> Sukses
+            </span>
+          </div>
+        </div>
 
-// Listen transaksi baru dari indexPage
-if(channel){
-  channel.onmessage = function(e){
-    if(e.data && e.data.type === 'NEW_PAYMENT'){
-      renderTable();
-    }
-  };
-}
+        <!-- Item 6 - Menunggu -->
+        <div class="transaction-item">
+          <div class="user-details">
+            <div class="avatar">FS</div>
+            <div class="user-info">
+              <div class="name">Fajar Santoso</div>
+              <div class="meta">Pembelian Paket Basic • 2 jam lalu</div>
+            </div>
+          </div>
+          <div class="item-right">
+            <div class="amount">Rp 150.000</div>
+            <span class="btn-status btn-menunggu">
+              <i class="fa-solid fa-clock"></i> Menunggu
+            </span>
+          </div>
+        </div>
 
-window.addEventListener('storage', function(e){
-  if(e.key === 'rekapinyu_transactions'){
-    renderTable();
-  }
-});
+        <!-- Item 7 - Sukses -->
+        <div class="transaction-item">
+          <div class="user-details">
+            <div class="avatar">GL</div>
+            <div class="user-info">
+              <div class="name">Gita Lestari</div>
+              <div class="meta">Pembelian Paket Pro • 3 jam lalu</div>
+            </div>
+          </div>
+          <div class="item-right">
+            <div class="amount">Rp 350.000</div>
+            <span class="btn-status btn-sukses">
+              <i class="fa-solid fa-check"></i> Sukses
+            </span>
+          </div>
+        </div>
 
-// Initial Render
-renderTable();
-</script>
+        <!-- Item 8 - Sukses -->
+        <div class="transaction-item">
+          <div class="user-details">
+            <div class="avatar">HS</div>
+            <div class="user-info">
+              <div class="name">Hendra Setiawan</div>
+              <div class="meta">Pembelian Paket Basic • 5 jam lalu</div>
+            </div>
+          </div>
+          <div class="item-right">
+            <div class="amount">Rp 150.000</div>
+            <span class="btn-status btn-sukses">
+              <i class="fa-solid fa-check"></i> Sukses
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
 </body>
 </html>
