@@ -258,10 +258,17 @@ const firebaseConfig = {
 };
 
 // Inisialisasi Firebase jika belum diinisialisasi
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+let db = null;
+try {
+  if (typeof firebase !== 'undefined') {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.database();
+  }
+} catch (err) {
+  console.error("Firebase init error:", err);
 }
-const db = firebase.database();
 
 // LOGIKA DARI LOGINAPP UNTUK PAGE (LOGIN & REGISTER)
 document.addEventListener('DOMContentLoaded', function () {
@@ -275,19 +282,52 @@ document.addEventListener('DOMContentLoaded', function () {
       const password = document.getElementById('login-password').value;
 
       const submitBtn = formLogin.querySelector('button[type="submit"]');
-      const originalBtnText = submitBtn ? submitBtn.textContent : '';
+      const originalBtnText = submitBtn ? submitBtn.textContent : 'Masuk ke Aplikasi';
+      
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Memeriksa...';
       }
 
-      // Langsung verifikasi ke Firebase Realtime Database
+      function resetBtn() {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+        }
+      }
+
+      // 1. Cek dulu pencatatan lokal (Lokal Fallback)
+      let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+      let localUser = registeredUsers.find(u => u.phone === phone);
+
+      if (localUser && localUser.password === password) {
+        localStorage.setItem('finance_active_session', JSON.stringify(localUser));
+        alert(`Selamat datang kembali, ${localUser.name}!`);
+        window.location.href = 'https://rekapinyu.github.io/';
+        return;
+      }
+
+      // 2. Jika Firebase tidak siap/load gagal, berikan respon langsung
+      if (!db) {
+        resetBtn();
+        alert('Koneksi database belum siap. Silakan pastikan koneksi internet Anda stabil.');
+        return;
+      }
+
+      // 3. Batas waktu respons Firebase (Timeout 5 Detik) agar tombol tidak macet
+      let isTimedOut = false;
+      const timer = setTimeout(function () {
+        isTimedOut = true;
+        resetBtn();
+        alert('Proses verifikasi memakan waktu terlalu lama. Silakan periksa koneksi internet Anda dan coba lagi.');
+      }, 5000);
+
+      // Fetch data dari Firebase Realtime Database
       db.ref('users/' + phone).once('value')
         .then(function (snapshot) {
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalBtnText;
-          }
+          if (isTimedOut) return;
+          clearTimeout(timer);
+          resetBtn();
 
           if (snapshot.exists()) {
             const userData = snapshot.val();
@@ -304,8 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
               // Simpan data sesi aktif
               localStorage.setItem('finance_active_session', JSON.stringify(activeSession));
 
-              // Sinkronkan juga ke daftar terdaftar di localStorage
-              let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+              // Sinkronkan ke daftar terdaftar di localStorage
               const index = registeredUsers.findIndex(u => u.phone === phone);
               if (index !== -1) {
                 registeredUsers[index] = activeSession;
@@ -315,21 +354,19 @@ document.addEventListener('DOMContentLoaded', function () {
               localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
 
               alert(`Selamat datang kembali, ${activeSession.name}!`);
-              // Mengarahkan ke URL aplikasi utama saat login berhasil
               window.location.href = 'https://rekapinyu.github.io/';
             } else {
               alert('Kata sandi yang Anda masukkan salah.');
             }
           } else {
-            alert('Nomor HP belum terdaftar di Firebase. Silakan daftar akun baru terlebih dahulu.');
+            alert('Nomor HP belum terdaftar di database. Silakan daftar akun baru terlebih dahulu.');
           }
         })
         .catch(function (error) {
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalBtnText;
-          }
-          alert('Terjadi kesalahan koneksi ke Firebase: ' + error.message);
+          if (isTimedOut) return;
+          clearTimeout(timer);
+          resetBtn();
+          alert('Terjadi kesalahan koneksi ke database: ' + error.message);
         });
     });
   }
@@ -366,7 +403,6 @@ document.addEventListener('DOMContentLoaded', function () {
       localStorage.setItem('finance_active_session', JSON.stringify(newUser));
 
       alert('Pendaftaran berhasil! Mengalihkan ke aplikasi...');
-      // Mengarahkan langsung ke URL aplikasi utama saat pendaftaran berhasil
       window.location.href = 'https://rekapinyu.github.io/';
     });
   }
