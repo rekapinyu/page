@@ -74,43 +74,33 @@
     <div class="forms-container reveal">
       
       <!-- FORM 1: PENDAFTARAN INTEGRASI FIREBASE -->
-    <script>
-  // Fungsi pendaftaran yang sudah terhubung dan otomatis pindah ke index.html
-  function handleFirebaseRegister(event) {
-    event.preventDefault();
-
-    const storeName = document.getElementById('reg-store').value.trim();
-    const ownerName = document.getElementById('reg-owner').value.trim();
-    const phone = document.getElementById('reg-phone').value.trim();
-    const password = document.getElementById('reg-password').value.trim();
-
-    if (!storeName || !ownerName || !phone || !password) {
-      alert('Harap isi semua kolom pendaftaran!');
-      return;
-    }
-
-    const userKey = phone.replace(/[^0-9]/g, '');
-
-    const userData = {
-      storeName: storeName,
-      ownerName: ownerName,
-      phone: phone,
-      password: password,
-      createdAt: new Date().toISOString()
-    };
-
-    // Simpan ke Firebase Database
-    db.ref('users/' + userKey).set(userData, function(error) {
-      if (error) {
-        alert('Gagal mendaftar: ' + error.message);
-      } else {
-        alert('Pendaftaran Berhasil! Silakan masuk menggunakan akun Anda.');
-        // Ini perintah untuk otomatis pindah ke halaman login index.html
-        window.location.href = 'index.html';
-      }
-    });
-  }
-</script>
+      <div class="form-card">
+        <h3><i class="fa-solid fa-user-plus" style="color:#2563eb;"></i> Form Pendaftaran Akun</h3>
+        <p class="subtitle">Daftar sekarang untuk membuka akses login ke aplikasi REKAPINYU.</p>
+        <form onsubmit="handleFirebaseRegister(event)">
+          <div class="form-grid-single">
+            <div class="form-group">
+              <label for="regStoreName">Nama Toko</label>
+              <input id="regStoreName" type="text" placeholder="Masukkan nama toko" required>
+            </div>
+            <div class="form-group">
+              <label for="regOwnerName">Nama Pemilik Toko</label>
+              <input id="regOwnerName" type="text" placeholder="Masukkan nama pemilik" required>
+            </div>
+          </div>
+          <div class="form-grid-single">
+            <div class="form-group">
+              <label for="regPhone">Nomor HP / WhatsApp</label>
+              <input id="regPhone" type="tel" placeholder="Contoh: 081234567890" required>
+            </div>
+            <div class="form-group">
+              <label for="regPassword">Kata Sandi (Password)</label>
+              <input id="regPassword" type="password" placeholder="Buat kata sandi akun" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;margin-top:10px;"><i class="fa-solid fa-paper-plane"></i> Daftar Sekarang</button>
+        </form>
+      </div>
 
       <!-- FORM 2: PERPANJANG PAKET -->
       <div class="form-card">
