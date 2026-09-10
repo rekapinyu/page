@@ -274,49 +274,63 @@ document.addEventListener('DOMContentLoaded', function () {
       const phone = document.getElementById('login-phone').value.trim();
       const password = document.getElementById('login-password').value;
 
-      // 1. Cek terlebih dahulu data pendaftaran di Firebase Realtime Database
-      db.ref('users/' + phone).once('value').then(function(snapshot) {
-        let user = null;
-        if (snapshot.exists()) {
-          const val = snapshot.val();
-          if (val.password === password) {
-            user = {
-              name: val.name || val.storeName || "Pengguna",
-              phone: phone,
-              password: password,
-              photo: val.photo || ""
-            };
+      const submitBtn = formLogin.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Memeriksa...';
+      }
+
+      // Langsung verifikasi ke Firebase Realtime Database
+      db.ref('users/' + phone).once('value')
+        .then(function (snapshot) {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
           }
-        }
 
-        // 2. Jika tidak ditemukan di Firebase, lakukan fallback cek ke localStorage
-        if (!user) {
-          const registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
-          user = registeredUsers.find(u => u.phone === phone && u.password === password);
-        }
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            
+            // Periksa kesesuaian kata sandi
+            if (userData.password === password) {
+              const activeSession = {
+                name: userData.name || userData.storeName || "Pengguna",
+                phone: phone,
+                password: password,
+                photo: userData.photo || ""
+              };
 
-        // 3. Eksekusi login jika user terverifikasi
-        if (user) {
-          localStorage.setItem('finance_active_session', JSON.stringify(user));
-          alert(`Selamat datang kembali, ${user.name}!`);
-          // Mengarahkan ke URL aplikasi utama saat login berhasil
-          window.location.href = 'https://rekapinyu.github.io/';
-        } else {
-          alert('Nomor HP atau kata sandi tidak cocok/belum terdaftar.');
-        }
-      }).catch(function(error) {
-        // Fallback saat koneksi internet / Firebase bermasalah
-        const registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
-        const user = registeredUsers.find(u => u.phone === phone && u.password === password);
+              // Simpan data sesi aktif
+              localStorage.setItem('finance_active_session', JSON.stringify(activeSession));
 
-        if (user) {
-          localStorage.setItem('finance_active_session', JSON.stringify(user));
-          alert(`Selamat datang kembali, ${user.name}!`);
-          window.location.href = 'https://rekapinyu.github.io/';
-        } else {
-          alert('Nomor HP atau kata sandi tidak cocok/belum terdaftar.');
-        }
-      });
+              // Sinkronkan juga ke daftar terdaftar di localStorage
+              let registeredUsers = JSON.parse(localStorage.getItem('finance_registered_users') || '[]');
+              const index = registeredUsers.findIndex(u => u.phone === phone);
+              if (index !== -1) {
+                registeredUsers[index] = activeSession;
+              } else {
+                registeredUsers.push(activeSession);
+              }
+              localStorage.setItem('finance_registered_users', JSON.stringify(registeredUsers));
+
+              alert(`Selamat datang kembali, ${activeSession.name}!`);
+              // Mengarahkan ke URL aplikasi utama saat login berhasil
+              window.location.href = 'https://rekapinyu.github.io/';
+            } else {
+              alert('Kata sandi yang Anda masukkan salah.');
+            }
+          } else {
+            alert('Nomor HP belum terdaftar di Firebase. Silakan daftar akun baru terlebih dahulu.');
+          }
+        })
+        .catch(function (error) {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+          }
+          alert('Terjadi kesalahan koneksi ke Firebase: ' + error.message);
+        });
     });
   }
 
