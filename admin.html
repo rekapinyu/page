@@ -317,9 +317,7 @@ function addNotification(x){
   const badge=document.getElementById('notifBadge');badge.textContent=notifications.length;badge.style.display='inline-block';renderNotifications();
 }
 function refreshAll(){if(db){db.ref('rekapinyu_transactions').once('value');}loadFirestoreUsers();renderStats();renderTransactions();renderUsers();renderLatest();renderActivity();}
-let notificationReady=false;
-const knownTransactionKeys=new Set();
-const pendingTransactionAdds=new Map();
+let isInitialLoad = true;
 
 function startFirebase(){
   try{
@@ -332,82 +330,68 @@ function startFirebase(){
 
     const txRef=db.ref('rekapinyu_transactions');
 
-    // Listener child_added dipasang sejak awal agar pembayaran tidak terlewat.
-    // Data yang sudah ada saat dashboard dibuka tidak akan dianggap notifikasi baru.
-    txRef.on('child_added',snap=>{
-      const x=snap.val()||{};
-      if(!notificationReady){
-        pendingTransactionAdds.set(snap.key,x);
-        return;
-      }
-      if(!knownTransactionKeys.has(snap.key)){
-        knownTransactionKeys.add(snap.key);
-        if(x.status==='MENUNGGU'){
-          addNotification({...x,_key:snap.key,id:x.id||snap.key});
-          toast('Pembayaran baru masuk: '+(x.id||snap.key));
-        }
-      }
-    },err=>{
-      console.error('Notifikasi realtime:',err);
-      toast('Notifikasi realtime gagal: '+err.message);
+    // Tandai saat loading awal data lama selesai
+    txRef.once('value').then(()=>{
+      isInitialLoad = false;
     });
 
-    // Semua transaksi tetap dimuat realtime untuk statistik dan tabel.
-    txRef.on('value',snap=>{
-      transactions=normalizeTransactions(snap.val());
+    // Notifikasi khusus transaksi baru yang masuk saat admin sedang buka halaman
+    txRef.on('child_added', snap => {
+      const x = snap.val() || {};
+      const key = snap.key;
 
-      const initialKeys=new Set(Object.keys(snap.val()||{}));
-      knownTransactionKeys.clear();
-      initialKeys.forEach(k=>knownTransactionKeys.add(k));
-
-      // Selesaikan event child_added yang datang sebelum snapshot awal selesai.
-      // Hanya key yang TIDAK ada pada snapshot awal yang benar-benar transaksi baru.
-      pendingTransactionAdds.forEach((x,key)=>{
-        if(!initialKeys.has(key) && x.status==='MENUNGGU'){
-          addNotification({...x,_key:key,id:x.id||key});
-          toast('Pembayaran baru masuk: '+(x.id||key));
-        }
-      });
-      pendingTransactionAdds.clear();
-      notificationReady=true;
-
-      renderStats();renderTransactions();renderLatest();
-    },err=>{
-      console.error('Realtime transaksi:',err);
-      toast('Transaksi tidak dapat dibaca: '+err.message);
+      if (!isInitialLoad && x.status === 'MENUNGGU') {
+        addNotification({ ...x, _key: key, id: x.id || key });
+        toast('Pembayaran baru masuk: ' + (x.storeName || x.id || key));
+        
+        // Efek suara notifikasi
+        try {
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+          audio.play().catch(() => {});
+        } catch (e) {}
+      }
     });
 
-    txRef.on('child_changed',snap=>{
-      const x=snap.val()||{};
+    // Update otomatis tabel dan statistik
+    txRef.on('value', snap => {
+      transactions = normalizeTransactions(snap.val());
+      renderStats();
+      renderTransactions();
+      renderLatest();
+    }, err => {
+      console.error('Realtime transaksi:', err);
+      toast('Transaksi tidak dapat dibaca: ' + err.message);
+    });
+
+    txRef.on('child_changed', snap => {
+      const x = snap.val() || {};
       activity.push({
-        title:'Status transaksi berubah',
-        text:`${x.id||snap.key} → ${x.status||'-'}`,
-        time:Date.now()
+        title: 'Status transaksi berubah',
+        text: `${x.id || snap.key} → ${x.status || '-'}`,
+        time: Date.now()
       });
       renderActivity();
     });
 
-    // Pengguna aplikasi disimpan di Firestore /rekapinyu_users/{uid}: realtime
     if(fs){
-      fs.collection('rekapinyu_users').onSnapshot(snap=>{
-        const map={};
-        snap.forEach(doc=>{map[doc.id]={...doc.data(),uid:doc.id};});
+      fs.collection('rekapinyu_users').onSnapshot(snap => {
+        const map = {};
+        snap.forEach(doc => { map[doc.id] = { ...doc.data(), uid: doc.id }; });
         loadUsers(map);
         renderStats();
         renderUsers();
-      },err=>{
-        console.warn('Firestore pengguna realtime:',err);
+      }, err => {
+        console.warn('Firestore pengguna realtime:', err);
         loadFirestoreUsers();
       });
     }
     loadFirestoreUsers();
   }catch(e){
-    console.error('Superadmin Firebase:',e);
+    console.error('Superadmin Firebase:', e);
     document.getElementById('firebaseState').innerHTML='<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i> Firebase gagal';
     document.getElementById('settingsFirebase').textContent='Gagal: '+e.message;
   }
 }
-
 if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
 const adminAuth = firebase.auth();
 
