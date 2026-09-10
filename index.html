@@ -264,13 +264,12 @@ if (!firebase.apps.length) {
 }
 const db = firebase.database();
 
-// REKAPINYU SUPERADMIN: autentikasi anonim agar Landing Page dapat membaca
-// perubahan status transaksi tanpa membuka database untuk pengunjung umum.
-if(firebase.auth){
-  firebase.auth().signInAnonymously()
-    .then(()=>console.log('SUPERADMIN RTDB: Landing Page terautentikasi'))
-    .catch(err=>console.error('SUPERADMIN RTDB: autentikasi anonim gagal',err));
-}
+// REKAPINYU SUPERADMIN: sesi anonim hanya untuk akses realtime transaksi.
+// Tidak mengubah Login/Daftar pengguna utama.
+const rtdbAuthReady = firebase.auth().signInAnonymously()
+  .then(()=>console.log('REKAPINYU RTDB: autentikasi realtime berhasil'))
+  .catch(err=>{ console.error('REKAPINYU RTDB: autentikasi realtime gagal',err); throw err; });
+
 
 
 
@@ -299,7 +298,6 @@ function handleRenewSubmit(e) {
 
   const newTransaction = {
     id: currentTxId,
-    ownerUid: (firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '',
     storeName: storeName,
     ownerName: ownerName,
     packageName: packageName,
@@ -313,11 +311,10 @@ function handleRenewSubmit(e) {
   list.unshift(newTransaction);
   localStorage.setItem('rekapinyu_transactions', JSON.stringify(list));
 
-  // REKAPINYU SUPERADMIN: kirim transaksi ke Firebase Realtime Database
-  // Tambahan ini tidak mengubah alur Login/Daftar maupun localStorage asli.
-  db.ref('rekapinyu_transactions/' + currentTxId).set(newTransaction)
-    .then(()=>console.log('SUPERADMIN RTDB: transaksi berhasil dikirim', currentTxId))
-    .catch(err=>console.error('SUPERADMIN RTDB: gagal mengirim transaksi', err));
+  // REKAPINYU SUPERADMIN: kirim transaksi ke Firebase setelah sesi realtime siap.
+  rtdbAuthReady.then(()=>db.ref('rekapinyu_transactions/' + currentTxId).set(newTransaction))
+    .then(()=>console.log('REKAPINYU RTDB: transaksi berhasil dikirim', currentTxId))
+    .catch(err=>console.error('REKAPINYU RTDB: gagal mengirim transaksi', err));
 
   if(channel){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
@@ -371,7 +368,6 @@ function submitBuy(e){
 
   const newTransaction = {
     id: currentTxId,
-    ownerUid: (firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '',
     storeName: storeName,
     ownerName: ownerName,
     packageName: packageName,
@@ -385,11 +381,10 @@ function submitBuy(e){
   list.unshift(newTransaction);
   localStorage.setItem('rekapinyu_transactions', JSON.stringify(list));
 
-  // REKAPINYU SUPERADMIN: kirim transaksi ke Firebase Realtime Database
-  // Tambahan ini tidak mengubah alur Login/Daftar maupun localStorage asli.
-  db.ref('rekapinyu_transactions/' + currentTxId).set(newTransaction)
-    .then(()=>console.log('SUPERADMIN RTDB: transaksi berhasil dikirim', currentTxId))
-    .catch(err=>console.error('SUPERADMIN RTDB: gagal mengirim transaksi', err));
+  // REKAPINYU SUPERADMIN: kirim transaksi ke Firebase setelah sesi realtime siap.
+  rtdbAuthReady.then(()=>db.ref('rekapinyu_transactions/' + currentTxId).set(newTransaction))
+    .then(()=>console.log('REKAPINYU RTDB: transaksi berhasil dikirim', currentTxId))
+    .catch(err=>console.error('REKAPINYU RTDB: gagal mengirim transaksi', err));
 
   if(channel){
     channel.postMessage({ type: 'NEW_PAYMENT', data: newTransaction });
@@ -448,15 +443,15 @@ window.addEventListener('storage', function(e){
   }
 });
 
-// REKAPINYU SUPERADMIN: terima perubahan status pembayaran langsung dari Firebase
-db.ref('rekapinyu_transactions').on('child_changed', function(snapshot){
-  const tx = snapshot.val() || {};
-  if(tx.id && tx.status){
-    handleStatusUpdate(tx.id, tx.status);
-  }
-}, function(err){
-  console.error('SUPERADMIN RTDB: listener status gagal', err);
-});
+// REKAPINYU SUPERADMIN: status Konfirmasi/Tolak diterima realtime.
+rtdbAuthReady.then(()=>{
+  db.ref('rekapinyu_transactions').on('child_changed', function(snapshot){
+    const tx = snapshot.val() || {};
+    if(tx.id && tx.status) handleStatusUpdate(tx.id, tx.status);
+  }, function(err){
+    console.error('REKAPINYU RTDB: listener status gagal',err);
+  });
+}).catch(()=>{});
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
