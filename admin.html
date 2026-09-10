@@ -210,9 +210,10 @@ tr:hover{background:#f8fafc}
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
-const firebaseConfig={databaseURL:"https://rekapinyu-default-rtdb.firebaseio.com"};
-let db=null,currentFilter='ALL',transactions=[],users=[],notifications=[],activity=[];
+const firebaseConfig={apiKey:"AIzaSyAyzAV68m4BRtwmn0iu2vDplZaJ9r_uQVk",authDomain:"rekapinyu.firebaseapp.com",projectId:"rekapinyu",storageBucket:"rekapinyu.firebasestorage.app",messagingSenderId:"835450919713",appId:"1:835450919713:web:818f9f48c5b05330d67c60",databaseURL:"https://rekapinyu-default-rtdb.firebaseio.com"};
+let db=null,fs=null,currentFilter='ALL',transactions=[],users=[],notifications=[],activity=[];
 const packageDays={"1 Bulan":30,"3 Bulan":90,"6 Bulan":180,"12 Bulan":365};
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
@@ -231,6 +232,15 @@ function normalizeTransactions(raw){
   return Object.entries(raw||{}).map(([key,v])=>({...v,id:v.id||key,_key:key})).sort((a,b)=>new Date(b.timestamp||0)-new Date(a.timestamp||0));
 }
 function loadUsers(raw){users=Object.entries(raw||{}).map(([key,v])=>({...v,_key:key,phone:v.phone||key}));}
+async function loadFirestoreUsers(){
+  if(!fs)return;
+  try{
+    const snap=await fs.collection('rekapinyu_users').get();
+    const map={}; snap.forEach(doc=>{map[doc.id]={...doc.data(),uid:doc.id};});
+    loadUsers(map); renderStats(); renderUsers();
+    document.getElementById('firebaseState').innerHTML='<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> Firebase terhubung';
+  }catch(e){console.warn('Firestore pengguna:',e); toast('Data pengguna belum dapat dibaca dari Firestore');}
+}
 function renderStats(){
   const total=transactions.length,p=transactions.filter(x=>x.status==='MENUNGGU').length,a=transactions.filter(x=>x.status==='DIKONFIRMASI').length,r=transactions.filter(x=>x.status==='DITOLAK').length;
   document.getElementById('statTotal').textContent=total;document.getElementById('statPending').textContent=p;document.getElementById('statApproved').textContent=a;document.getElementById('statRejected').textContent=r;document.getElementById('statUsers').textContent=users.length;
@@ -287,15 +297,18 @@ function addNotification(x){
   notifications.push({title:'Pembayaran baru',text:`${x.storeName||'-'} · ${x.packageName||'-'} · ${x.amount||'-'}`,time:Date.now()});
   const badge=document.getElementById('notifBadge');badge.textContent=notifications.length;badge.style.display='inline-block';renderNotifications();
 }
-function refreshAll(){if(db){db.ref('rekapinyu_transactions').once('value');db.ref('users').once('value');}renderStats();renderTransactions();renderUsers();renderLatest();renderActivity();}
+function refreshAll(){if(db){db.ref('rekapinyu_transactions').once('value');}loadFirestoreUsers();renderStats();renderTransactions();renderUsers();renderLatest();renderActivity();}
 function startFirebase(){
   try{
-    if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.database();
+    if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.database();fs=firebase.firestore();
     document.getElementById('firebaseState').innerHTML='<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> Firebase terhubung';
-    document.getElementById('settingsFirebase').textContent='Terhubung ke Realtime Database';
-    db.ref('rekapinyu_transactions').on('value',snap=>{const old=transactions;transactions=normalizeTransactions(snap.val());const oldIds=new Set(old.map(x=>x._key));transactions.filter(x=>!oldIds.has(x._key)).forEach(x=>{if(x.status==='MENUNGGU')addNotification(x);});renderStats();renderTransactions();renderUsers();renderLatest();});
-    db.ref('users').on('value',snap=>{loadUsers(snap.val());renderStats();renderUsers();});
+    document.getElementById('settingsFirebase').textContent='Terhubung ke Firebase Realtime Database + Firestore';
+    // Transaksi dari Landing Page: realtime tanpa refresh
+    db.ref('rekapinyu_transactions').on('value',snap=>{const old=transactions;transactions=normalizeTransactions(snap.val());const oldIds=new Set(old.map(x=>x._key));transactions.filter(x=>!oldIds.has(x._key)).forEach(x=>{if(x.status==='MENUNGGU')addNotification(x);});renderStats();renderTransactions();renderLatest();});
     db.ref('rekapinyu_transactions').on('child_changed',snap=>{const x=snap.val()||{};activity.push({title:'Status transaksi berubah',text:`${x.id||snap.key} → ${x.status||'-'}`,time:Date.now()});renderActivity();});
+    // Pengguna aplikasi disimpan di Firestore /rekapinyu_users/{uid}: realtime
+    if(fs){fs.collection('rekapinyu_users').onSnapshot(snap=>{const map={};snap.forEach(doc=>{map[doc.id]={...doc.data(),uid:doc.id};});loadUsers(map);renderStats();renderUsers();},err=>{console.warn('Firestore pengguna realtime:',err);loadFirestoreUsers();});}
+    loadFirestoreUsers();
   }catch(e){document.getElementById('firebaseState').innerHTML='<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i> Firebase gagal';document.getElementById('settingsFirebase').textContent='Gagal: '+e.message;}
 }
 startFirebase();
