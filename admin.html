@@ -298,13 +298,33 @@ function addNotification(x){
   const badge=document.getElementById('notifBadge');badge.textContent=notifications.length;badge.style.display='inline-block';renderNotifications();
 }
 function refreshAll(){if(db){db.ref('rekapinyu_transactions').once('value');}loadFirestoreUsers();renderStats();renderTransactions();renderUsers();renderLatest();renderActivity();}
+let notificationReady=false;
+const knownTransactionKeys=new Set();
 function startFirebase(){
   try{
     if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.database();fs=firebase.firestore();
     document.getElementById('firebaseState').innerHTML='<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> Firebase terhubung';
     document.getElementById('settingsFirebase').textContent='Terhubung ke Firebase Realtime Database + Firestore';
-    // Transaksi dari Landing Page: realtime tanpa refresh
-    db.ref('rekapinyu_transactions').on('value',snap=>{const old=transactions;transactions=normalizeTransactions(snap.val());const oldIds=new Set(old.map(x=>x._key));transactions.filter(x=>!oldIds.has(x._key)).forEach(x=>{if(x.status==='MENUNGGU')addNotification(x);});renderStats();renderTransactions();renderLatest();});
+    // Semua transaksi tetap dimuat realtime untuk statistik dan tabel.
+    db.ref('rekapinyu_transactions').on('value',snap=>{
+      transactions=normalizeTransactions(snap.val());
+      knownTransactionKeys.clear();
+      transactions.forEach(x=>knownTransactionKeys.add(x._key));
+      notificationReady=true;
+      renderStats();renderTransactions();renderLatest();
+    },err=>{
+      console.warn('Realtime transaksi:',err);
+      toast('Transaksi tidak dapat dibaca: '+err.message);
+    });
+    // Notifikasi pembayaran baru: child_added hanya memberi notifikasi untuk data yang benar-benar masuk setelah dashboard siap.
+    db.ref('rekapinyu_transactions').on('child_added',snap=>{
+      const x=snap.val()||{};
+      if(!notificationReady){knownTransactionKeys.add(snap.key);return;}
+      if(!knownTransactionKeys.has(snap.key)){
+        knownTransactionKeys.add(snap.key);
+        if(x.status==='MENUNGGU')addNotification({...x,_key:snap.key,id:x.id||snap.key});
+      }
+    },err=>{console.warn('Notifikasi realtime:',err);toast('Notifikasi realtime gagal: '+err.message);});
     db.ref('rekapinyu_transactions').on('child_changed',snap=>{const x=snap.val()||{};activity.push({title:'Status transaksi berubah',text:`${x.id||snap.key} → ${x.status||'-'}`,time:Date.now()});renderActivity();});
     // Pengguna aplikasi disimpan di Firestore /rekapinyu_users/{uid}: realtime
     if(fs){fs.collection('rekapinyu_users').onSnapshot(snap=>{const map={};snap.forEach(doc=>{map[doc.id]={...doc.data(),uid:doc.id};});loadUsers(map);renderStats();renderUsers();},err=>{console.warn('Firestore pengguna realtime:',err);loadFirestoreUsers();});}
