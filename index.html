@@ -76,6 +76,33 @@
   header .navlinks>.btn-primary{display:inline-flex;padding:10px 12px;font-size:12px;white-space:nowrap}
 }
 </style>
+<style>
+@media(max-width:560px){
+  .features,.steps,.pricing-grid{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:16px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    justify-content:flex-start!important;
+    scroll-snap-type:x mandatory;
+    scroll-padding-inline:4%;
+    padding:8px 4% 18px!important;
+    margin-inline:-4%;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .features::-webkit-scrollbar,.steps::-webkit-scrollbar,.pricing-grid::-webkit-scrollbar{display:none}
+  .features>.feature,.steps>.step,.pricing-grid>.price-card{
+    flex:0 0 84%!important;
+    min-width:84%!important;
+    scroll-snap-align:start;
+  }
+  .features>.feature{min-height:230px}
+  .steps>.step{min-height:220px}
+  .pricing-grid>.price-card{min-height:220px}
+}
+</style>
 </head>
 <body>
 <header><div class="container nav"><a class="brand" href="#"><span class="brand-mark"><i class="fa-solid fa-chart-line"></i></span>REKAPINYU</a><nav class="navlinks"><a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#paket">Paket</a><a href="#tentang">Tentang</a><a class="btn btn-primary" href="https://rekapinyu.github.io/"><i class="fa-solid fa-right-to-bracket"></i> Masuk / Daftar</a></nav></div></header>
