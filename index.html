@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>REKAPINYU — Kelola Keuangan Toko Lebih Mudah</title>
 <meta name="description" content="REKAPINYU membantu mencatat pendapatan, belanja, pengeluaran, kasbon, history dan laporan toko dengan cepat.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,6 +101,11 @@
   .features>.feature{min-height:230px}
   .steps>.step{min-height:220px}
   .pricing-grid>.price-card{min-height:220px}
+}
+</style>
+<style>
+@media(max-width:768px){
+  html,body{touch-action:manipulation;-webkit-text-size-adjust:100%}
 }
 </style>
 </head>
@@ -287,6 +292,13 @@
 <footer class="footer"><div class="container footer-inner"><span>© 2026 REKAPINYU — Keuangan Toko</span><span>Dibuat untuk pencatatan toko yang lebih praktis.</span></div></footer>
 
 <script>
+document.addEventListener('keydown',function(event){
+  if(event.ctrlKey&&event.key.toLowerCase()==='u'){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+});
+
 // KONFIGURASI FIREBASE REALTIME DATABASE REKAPINYU
 const firebaseConfig = {
   databaseURL: "https://rekapinyu-default-rtdb.firebaseio.com"
