@@ -118,11 +118,50 @@
   html,body{touch-action:manipulation;-webkit-text-size-adjust:100%}
 }
 </style>
+<style>
+header{background:#fff;border-bottom-color:#e6edf5;box-shadow:0 4px 24px #17385e0a}
+.nav{height:78px}
+.brand-mark{background:linear-gradient(135deg,#0f766e,#2563eb);box-shadow:0 10px 25px #2563eb30}
+.navlinks{gap:30px}
+.navlinks a{color:#425575}
+.navlinks .btn-primary{padding:14px 22px;border-radius:13px}
+.hero{padding:78px 0 104px;background-color:#fff;background-image:radial-gradient(#dbe5f0 1px,transparent 1px),linear-gradient(135deg,#fff 0%,#f7fbff 58%,#eefbf9 100%);background-size:22px 22px,100% 100%;position:relative}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#ffffffee 0%,#ffffffd8 44%,#ffffff66 100%);pointer-events:none}
+.hero-grid{position:relative;z-index:1;grid-template-columns:1.05fr .95fr;gap:72px}
+.eyebrow{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;letter-spacing:.08em;text-transform:uppercase}
+.hero h1{max-width:660px;color:#172f68;font-size:clamp(44px,6vw,76px);letter-spacing:-3.5px}
+.gradient{background:none;color:#2563eb;-webkit-text-fill-color:#2563eb;animation:none}
+.hero h1{color:#2563eb}
+.hero p{color:#5a6f8b;max-width:590px}
+.hero-actions .btn-primary{background:linear-gradient(135deg,#0f766e,#2563eb);border-radius:12px}
+.hero-actions .btn-light{background:#fff;border-color:#cbdced;border-radius:12px}
+.photo-card{border-radius:28px;border-width:9px;box-shadow:0 28px 65px #17385e25;transform:rotate(1.2deg)}
+.person-stage{height:500px;position:relative;display:flex;align-items:flex-end;justify-content:center;isolation:isolate}
+.person-backdrop{position:absolute;width:390px;height:390px;right:5%;top:45px;border-radius:50%;background:linear-gradient(145deg,#0ea5e9,#2563eb);z-index:-1;box-shadow:0 25px 70px #2563eb30}
+.person-backdrop:after{content:"";position:absolute;inset:22px;border:1px solid #ffffff45;border-radius:50%}
+.person-photo{height:470px;width:min(100%,430px);object-fit:cover;object-position:center top;display:block;align-self:flex-end;mix-blend-mode:multiply;filter:contrast(1.04) saturate(.94);border-radius:48% 48% 0 0;mask-image:linear-gradient(to bottom,#000 0 88%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,#000 0 88%,transparent 100%)}
+.person-stat{position:absolute;background:#fff;border:1px solid #e5edf5;border-radius:15px;padding:13px 16px;box-shadow:0 16px 35px #17385e1c;color:#10233f;z-index:2}
+.person-stat span{display:block;color:#718198;font-size:11px;margin-bottom:4px}
+.person-stat strong{display:block;font-size:20px}
+.person-stat-top{top:52px;left:0}
+.person-stage .glass{right:-18px;bottom:58px}
+.hero-visual:after{content:"";position:absolute;width:165px;height:165px;border-radius:50%;right:-45px;top:-42px;background:#2563eb18;z-index:-1}
+.orb{background:#f59e0b20;top:auto;right:auto;left:-55px;bottom:-45px}
+@media(max-width:560px){
+  .hero{padding:52px 0 78px}
+  .hero-grid{gap:42px}
+  .person-stage{height:390px}
+  .person-backdrop{width:290px;height:290px;top:30px;right:3%}
+  .person-photo{height:370px;width:310px}
+  .person-stat-top{top:28px;left:0}
+  .person-stage .glass{right:0;bottom:20px}
+}
+</style>
 </head>
 <body>
-<header><div class="container nav"><a class="brand" href="#"><span class="brand-mark"><i class="fa-solid fa-chart-line"></i></span>REKAPINYU</a><nav class="navlinks"><a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#paket">Paket</a><a href="#tentang">Tentang</a><a class="btn btn-primary" href="https://rekapinyu.github.io/"><i class="fa-solid fa-right-to-bracket"></i> Masuk / Daftar</a></nav></div></header>
+<header><div class="container nav"><a class="brand" href="#"><span class="brand-mark"><i class="fa-solid fa-chart-line"></i></span>REKAPINYU</a><nav class="navlinks"><a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#tentang">Tentang</a><a class="btn btn-primary" href="https://rekapinyu.github.io/"><i class="fa-solid fa-right-to-bracket"></i> Masuk / Daftar</a></nav></div></header>
 <main id="mainContent">
-<section class="hero"><div class="container hero-grid"><div class="reveal"><div class="eyebrow"><i class="fa-solid fa-sparkles"></i> Aplikasi Keuangan Toko</div><h1>Kelola keuangan toko jadi <span class="gradient">lebih rapi.</span></h1><p>Catat pendapatan, belanja, pengeluaran, kasbon, dan history harian dalam satu tempat. <span class="typing">Cepat. Akurat. Praktis.</span></p><div class="hero-actions"><a class="btn btn-primary" href="https://rekapinyu.github.io/">Mulai Gunakan REKAPINYU <i class="fa-solid fa-arrow-up-right-from-square"></i></a><a class="btn btn-light" href="#fitur">Lihat Fitur</a></div></div><div class="hero-visual reveal"><div class="orb"></div><div class="photo-card"><img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=85" alt="Perencanaan dan pencatatan keuangan"></div><div class="glass"><span>Total pencatatan</span><strong>Lebih teratur</strong><span><i class="fa-solid fa-circle-check" style="color:#16a34a"></i> Semua dalam satu aplikasi</span></div></div></div></section>
+<section class="hero"><div class="container hero-grid"><div class="reveal"><div class="eyebrow"><i class="fa-solid fa-sparkles"></i> Aplikasi Keuangan Toko</div><h1>Kelola keuangan toko jadi <span class="gradient">lebih rapi.</span></h1><p>Catat pendapatan, belanja, pengeluaran, kasbon, dan history harian dalam satu tempat. <span class="typing">Cepat. Akurat. Praktis.</span></p><div class="hero-actions"><a class="btn btn-primary" href="https://rekapinyu.github.io/">Mulai Gunakan REKAPINYU <i class="fa-solid fa-arrow-up-right-from-square"></i></a><a class="btn btn-light" href="#fitur">Lihat Fitur</a></div></div><div class="hero-visual reveal"><div class="orb"></div><div class="person-stage"><div class="person-backdrop"></div><img class="person-photo" src="2223.jpg" alt="Pemilik toko menggunakan REKAPINYU"><div class="person-stat person-stat-top"><span>Catatan tersimpan</span><strong>10K+</strong></div><div class="glass"><span>Total pencatatan</span><strong>Lebih teratur</strong><span><i class="fa-solid fa-circle-check" style="color:#16a34a"></i> Semua dalam satu aplikasi</span></div></div></div></div></section>
 <section id="fitur" class="section"><div class="container"><div class="section-head reveal"><h2>Satu aplikasi untuk kebutuhan toko</h2><p>REKAPINYU dirancang agar pencatatan harian terasa sederhana, sementara data tetap mudah ditinjau kembali.</p></div><div class="features"><div class="feature reveal"><div class="icon"><i class="fa-solid fa-pen-to-square"></i></div><h3>Input Harian</h3><p>Catat pendapatan, belanja, pengeluaran, dan persentase profit dengan cepat.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div><h3>History</h3><p>Lihat kembali data harian dan kelola pencatatan yang sudah tersimpan.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-wallet"></i></div><h3>Kasbon</h3><p>Bantu mencatat dan mengamankan akses data kasbon toko.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-chart-pie"></i></div><h3>Laporan</h3><p>Ringkas data keuangan bulanan berdasarkan history harian.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-cloud-arrow-up"></i></div><h3>Backup</h3><p>Manfaatkan backup otomatis agar data history lebih mudah dipulihkan.</p></div></div></div></section>
 <section id="cara-kerja" class="section" style="background:#eef6ff"><div class="container"><div class="section-head reveal"><h2>Mulai dalam 3 langkah</h2><p>Tidak perlu alur yang rumit. Masuk, catat, lalu pantau.</p></div><div class="steps"><div class="step reveal"><div class="num">01 — DAFTAR / MASUK</div><h3>Buat akun</h3><p>Gunakan nomor HP dan kata sandi untuk masuk ke aplikasi REKAPINYU.</p></div><div class="step reveal"><div class="num">02 — CATAT</div><h3>Input data harian</h3><p>Masukkan pendapatan, belanja, pengeluaran, dan profit sesuai kebutuhan toko.</p></div><div class="step reveal"><div class="num">03 — PANTAU</div><h3>Cek history & laporan</h3><p>Tinjau kembali pencatatan dan gunakan laporan bulanan untuk membantu evaluasi.</p></div></div></div></section>
 
