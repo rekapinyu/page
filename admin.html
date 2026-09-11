@@ -232,6 +232,7 @@ tr:hover{background:#f8fafc}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script>
 const firebaseConfig={apiKey:"AIzaSyAyzAV68m4BRtwmn0iu2vDplZaJ9r_uQVk",authDomain:"rekapinyu.firebaseapp.com",projectId:"rekapinyu",storageBucket:"rekapinyu.firebasestorage.app",messagingSenderId:"835450919713",appId:"1:835450919713:web:818f9f48c5b05330d67c60",databaseURL:"https://rekapinyu-default-rtdb.asia-southeast1.firebasedatabase.app"};
+const ADMIN_EMAILS=['244341@rekapinyu.app'];
 let db=null,fs=null,currentFilter='ALL',transactions=[],users=[],notifications=[],activity=[],presenceState={},presenceRefs={};
 const packageDays={"1 Bulan":30,"3 Bulan":90,"6 Bulan":180,"12 Bulan":365};
 
@@ -476,7 +477,10 @@ async function startSuperadminAfterAuth(user){
   superadminAuthChecking=true;
   try{
     const token=await user.getIdTokenResult(true),claims=token.claims||{};
-    if(claims.admin!==true&&claims.superadmin!==true){
+    const email=String(user.email||'').toLowerCase();
+    const isAllowedEmail=ADMIN_EMAILS.includes(email);
+    const isAllowedClaim=claims.admin===true||claims.superadmin===true||claims.role==='admin'||claims.role==='superadmin';
+    if(!isAllowedEmail&&!isAllowedClaim){
       showAdminAuthError('Akun ini bukan akun Superadmin. Akses ditolak.');
       await adminAuth.signOut();
       return;
