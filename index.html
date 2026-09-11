@@ -128,35 +128,6 @@
 
 <section class="pricing" id="paket">
   <div class="container">
-    <div class="section-head reveal">
-      <h2>Harga Paket</h2>
-      <p>Pilih paket sesuai kebutuhan pencatatan toko Anda.</p>
-    </div>
-    <div class="pricing-grid">
-      <div class="price-card reveal">
-        <h3>Paket Gratis</h3>
-        <ul><li>Input Data 1 Bulan</li></ul>
-        <div class="price">Rp 0 <small>/ gratis</small></div>
-      </div>
-      <div class="price-card reveal">
-        <h3>Paket Reguler</h3>
-        <ul><li>Input Data 3 Bulan</li></ul>
-        <div class="price">Rp 20.000</div>
-      </div>
-      <div class="price-card best reveal">
-        <span class="price-badge">Best Seller</span>
-        <h3>Paket Best Seller</h3>
-        <ul><li>Input Data 6 Bulan</li></ul>
-        <div class="price">Rp 50.000</div>
-      </div>
-      <div class="price-card reveal">
-        <h3>Paket Bisnis</h3>
-        <ul><li>Input Data 12 Bulan</li></ul>
-        <div class="price">Rp 100.000</div>
-      </div>
-    </div>
-
-    <!-- KEDUA FORM TEPAT DI BAWAH KOTAK HARGA PAKET -->
     <div class="forms-container reveal">
       
       <!-- DUKUNGAN INDEX LOGIN UNTUK PAGE (LOGIN & PENDAFTARAN) -->
@@ -200,49 +171,6 @@
             <button type="submit" class="btn btn-primary btn-register">Daftar Akun Baru</button>
           </form>
         </div>
-      </div>
-
-      <!-- FORM 2: PERPANJANG PAKET -->
-      <div class="form-card">
-        <h3><i class="fa-solid fa-rotate" style="color:#0f766e;"></i> Perpanjang Paket Kamu</h3>
-        <p class="subtitle">Lengkapi data di sebelah kiri dan scan QRIS di sebelah kanan untuk memperpanjang paket.</p>
-        <form onsubmit="handleRenewSubmit(event)">
-          <div class="checkout-grid">
-            <div class="checkout-left">
-              <div class="form-group">
-                <label for="renewStoreName">Nama Toko</label>
-                <input id="renewStoreName" type="text" placeholder="Masukkan nama toko" required>
-              </div>
-              <div class="form-group">
-                <label for="renewOwnerName">Nama Pemilik Toko</label>
-                <input id="renewOwnerName" type="text" placeholder="Masukkan nama pemilik toko" required>
-              </div>
-              <div class="form-group">
-                <label for="renewPackageSelect">Pilih Nama Paket</label>
-                <select id="renewPackageSelect" onchange="updateRenewDuration()" required>
-                  <option value="">-- Pilih Paket --</option>
-                  <option value="Paket Gratis" data-duration="1 Bulan" data-price="Rp 0">Paket Gratis (1 Bulan)</option>
-                  <option value="Paket Reguler" data-duration="3 Bulan" data-price="Rp 20.000">Paket Reguler (3 Bulan)</option>
-                  <option value="Paket Best Seller" data-duration="6 Bulan" data-price="Rp 50.000">Paket Best Seller (6 Bulan)</option>
-                  <option value="Paket Bisnis" data-duration="12 Bulan" data-price="Rp 100.000">Paket Bisnis (12 Bulan)</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="renewDuration">Durasi Waktu Paket</label>
-                <input id="renewDuration" type="text" placeholder="Otomatis menampilkan durasi" readonly>
-              </div>
-            </div>
-            <div class="checkout-right">
-              <label>Foto QRIS Pembayaran</label>
-              <div class="qris-note">1. Transfer sesuai nominal paket ke QRIS di bawah.<br>2. Klik Konfirmasi Pembayaran Agar Diproses Oleh Admin.</div>
-              <div class="qris-placeholder">
-                <img src="https://github.com/rekapinyu/rekapinyupage/blob/main/QRREKAPINYU.jpeg?raw=true" alt="QRIS Pembayaran">
-              </div>
-              <div id="renewAmountNote" class="qris-note" style="text-align:center;font-weight:700;">Total: -</div>
-              <button class="btn btn-primary buy-submit" type="submit">Konfirmasi Pembayaran</button>
-            </div>
-          </div>
-        </form>
       </div>
 
     </div>
