@@ -31,35 +31,51 @@
 .form-group input,.form-group select{width:100%;padding:12px 13px;border:1px solid #d8e3ee;border-radius:12px;outline:none;font:inherit}
 .form-group input:focus,.form-group select:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb14}
 
-/* Modern UI Form Login dan Pendaftaran */
-.auth-section{padding:96px 0;background:linear-gradient(135deg,#f3f8ff 0%,#eefbf8 100%);position:relative;overflow:hidden}
-.auth-section:before{content:"";position:absolute;width:380px;height:380px;border:1px solid #2563eb18;border-radius:50%;right:-150px;top:-170px;box-shadow:0 0 0 35px #2563eb08,0 0 0 70px #2563eb05}
-.auth-intro{max-width:620px;margin:0 auto 32px;text-align:center;position:relative}
-.auth-kicker{display:inline-flex;align-items:center;gap:8px;color:#0f766e;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
-.auth-intro h2{font-size:clamp(28px,4vw,42px);line-height:1.1;color:#10233f;margin-bottom:12px}
-.auth-intro p{color:#64748b;font-size:15px;line-height:1.7}
-.auth-container{display:grid;grid-template-columns:1fr 1fr;width:100%;background:#fff;border:1px solid #d8e5f1;border-radius:28px;overflow:hidden;box-shadow:0 24px 60px #17385e14;position:relative}
-.auth-col{padding:42px clamp(24px,4vw,52px)}
-.auth-col.login-section{border-right:1px solid #e5edf5;background:linear-gradient(145deg,#ffffff,#f4fbff)}
-.auth-col.register-section{background:#fff}
-.auth-heading{display:flex;align-items:center;gap:14px;margin-bottom:28px}
-.auth-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#0f766e,#2563eb);box-shadow:0 10px 22px #2563eb25}
-.register-icon{background:linear-gradient(135deg,#2563eb,#7c3aed)}
-.auth-col h2{font-size:22px;margin-bottom:4px;color:#10233f}
-.auth-col p.subtitle{margin:0;color:#64748b;font-size:13px}
-.auth-col .form-group{gap:8px;margin-bottom:18px}
-.auth-col .form-group label{font-size:12px;color:#334b68}
-.auth-col .form-group input{padding:14px 15px;border-radius:13px;background:#fbfdff;border-color:#d8e5f1;transition:.2s}
-.auth-col .form-group input:focus{background:#fff;border-color:#2563eb;box-shadow:0 0 0 4px #2563eb12}
-.auth-col button{width:100%;padding:14px 18px;border-radius:13px;margin-top:4px}
-.btn-login{background:linear-gradient(135deg,#0f766e,#2563eb)}
-.btn-register{background:linear-gradient(135deg,#2563eb,#7c3aed)}
+/* CSS Tambahan Dari LoginApp */
+.auth-container {
+  display: flex;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #dfeaf5;
+  overflow: hidden;
+}
+.auth-col {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+.auth-col form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.auth-col form button {
+  margin-top: auto;
+}
+.auth-col.login-section {
+  border-right: 1px solid #e0e0e0;
+  background-color: #fafafa;
+}
+.auth-col.register-section {
+  background-color: #ffffff;
+}
+.auth-col h2 {
+  font-size: 20px;
+  margin-bottom: 6px;
+  color: #10233f;
+}
+.btn-login {
+  background-color: #007bff;
+}
+.btn-register {
+  background-color: #28a745;
+}
 @media(max-width:768px){
   .form-grid-single{grid-template-columns:1fr}
-  .auth-section{padding:72px 0}
-  .auth-container{grid-template-columns:1fr;border-radius:22px}
-  .auth-col{padding:32px 24px}
-  .auth-col.login-section{border-right:none;border-bottom:1px solid #e5edf5}
+  .auth-container { flex-direction: column; }
+  .auth-col.login-section { border-right: none; border-bottom: 1px solid #e0e0e0; }
 }
 </style>
 <style>
@@ -104,37 +120,131 @@
 </style>
 </head>
 <body>
-<header><div class="container nav"><a class="brand" href="#"><span class="brand-mark"><i class="fa-solid fa-chart-line"></i></span>REKAPINYU</a><nav class="navlinks"><a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#akun">Akun</a><a href="#tentang">Tentang</a><a class="btn btn-primary" href="https://rekapinyu.github.io/"><i class="fa-solid fa-right-to-bracket"></i> Masuk / Daftar</a></nav></div></header>
+<header><div class="container nav"><a class="brand" href="#"><span class="brand-mark"><i class="fa-solid fa-chart-line"></i></span>REKAPINYU</a><nav class="navlinks"><a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#paket">Paket</a><a href="#tentang">Tentang</a><a class="btn btn-primary" href="https://rekapinyu.github.io/"><i class="fa-solid fa-right-to-bracket"></i> Masuk / Daftar</a></nav></div></header>
 <main id="mainContent">
 <section class="hero"><div class="container hero-grid"><div class="reveal"><div class="eyebrow"><i class="fa-solid fa-sparkles"></i> Aplikasi Keuangan Toko</div><h1>Kelola keuangan toko jadi <span class="gradient">lebih rapi.</span></h1><p>Catat pendapatan, belanja, pengeluaran, kasbon, dan history harian dalam satu tempat. <span class="typing">Cepat. Akurat. Praktis.</span></p><div class="hero-actions"><a class="btn btn-primary" href="https://rekapinyu.github.io/">Mulai Gunakan REKAPINYU <i class="fa-solid fa-arrow-up-right-from-square"></i></a><a class="btn btn-light" href="#fitur">Lihat Fitur</a></div></div><div class="hero-visual reveal"><div class="orb"></div><div class="photo-card"><img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=85" alt="Perencanaan dan pencatatan keuangan"></div><div class="glass"><span>Total pencatatan</span><strong>Lebih teratur</strong><span><i class="fa-solid fa-circle-check" style="color:#16a34a"></i> Semua dalam satu aplikasi</span></div></div></div></section>
 <section id="fitur" class="section"><div class="container"><div class="section-head reveal"><h2>Satu aplikasi untuk kebutuhan toko</h2><p>REKAPINYU dirancang agar pencatatan harian terasa sederhana, sementara data tetap mudah ditinjau kembali.</p></div><div class="features"><div class="feature reveal"><div class="icon"><i class="fa-solid fa-pen-to-square"></i></div><h3>Input Harian</h3><p>Catat pendapatan, belanja, pengeluaran, dan persentase profit dengan cepat.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div><h3>History</h3><p>Lihat kembali data harian dan kelola pencatatan yang sudah tersimpan.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-wallet"></i></div><h3>Kasbon</h3><p>Bantu mencatat dan mengamankan akses data kasbon toko.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-chart-pie"></i></div><h3>Laporan</h3><p>Ringkas data keuangan bulanan berdasarkan history harian.</p></div><div class="feature reveal"><div class="icon"><i class="fa-solid fa-cloud-arrow-up"></i></div><h3>Backup</h3><p>Manfaatkan backup otomatis agar data history lebih mudah dipulihkan.</p></div></div></div></section>
 <section id="cara-kerja" class="section" style="background:#eef6ff"><div class="container"><div class="section-head reveal"><h2>Mulai dalam 3 langkah</h2><p>Tidak perlu alur yang rumit. Masuk, catat, lalu pantau.</p></div><div class="steps"><div class="step reveal"><div class="num">01 — DAFTAR / MASUK</div><h3>Buat akun</h3><p>Gunakan nomor HP dan kata sandi untuk masuk ke aplikasi REKAPINYU.</p></div><div class="step reveal"><div class="num">02 — CATAT</div><h3>Input data harian</h3><p>Masukkan pendapatan, belanja, pengeluaran, dan profit sesuai kebutuhan toko.</p></div><div class="step reveal"><div class="num">03 — PANTAU</div><h3>Cek history & laporan</h3><p>Tinjau kembali pencatatan dan gunakan laporan bulanan untuk membantu evaluasi.</p></div></div></div></section>
 
-<section class="auth-section" id="akun">
+<section class="pricing" id="paket">
   <div class="container">
-    <div class="auth-intro reveal">
-      <span class="auth-kicker"><i class="fa-solid fa-shield-halved"></i> Akses REKAPINYU</span>
-      <h2>Mulai kelola toko dengan lebih teratur.</h2>
-      <p>Masuk ke akun Anda atau buat akun baru untuk menyimpan pencatatan toko dalam satu tempat.</p>
+    <div class="section-head reveal">
+      <h2>Harga Paket</h2>
+      <p>Pilih paket sesuai kebutuhan pencatatan toko Anda.</p>
     </div>
-    <div class="auth-container reveal">
-      <div class="auth-col login-section">
-        <div class="auth-heading"><span class="auth-icon"><i class="fa-solid fa-arrow-right-to-bracket"></i></span><div><h2>Masuk Akun</h2><p class="subtitle">Lanjutkan pencatatan toko Anda</p></div></div>
-        <form id="form-login">
-          <div class="form-group"><label for="login-phone">Nomor WhatsApp / HP</label><input type="tel" id="login-phone" placeholder="Contoh: 08123456789" required></div>
-          <div class="form-group"><label for="login-password">Kata Sandi</label><input type="password" id="login-password" placeholder="Masukkan kata sandi" required></div>
-          <button type="submit" class="btn btn-primary btn-login"><i class="fa-solid fa-lock-open"></i> Masuk ke Aplikasi</button>
+    <div class="pricing-grid">
+      <div class="price-card reveal">
+        <h3>Paket Gratis</h3>
+        <ul><li>Input Data 1 Bulan</li></ul>
+        <div class="price">Rp 0 <small>/ gratis</small></div>
+      </div>
+      <div class="price-card reveal">
+        <h3>Paket Reguler</h3>
+        <ul><li>Input Data 3 Bulan</li></ul>
+        <div class="price">Rp 20.000</div>
+      </div>
+      <div class="price-card best reveal">
+        <span class="price-badge">Best Seller</span>
+        <h3>Paket Best Seller</h3>
+        <ul><li>Input Data 6 Bulan</li></ul>
+        <div class="price">Rp 50.000</div>
+      </div>
+      <div class="price-card reveal">
+        <h3>Paket Bisnis</h3>
+        <ul><li>Input Data 12 Bulan</li></ul>
+        <div class="price">Rp 100.000</div>
+      </div>
+    </div>
+
+    <!-- KEDUA FORM TEPAT DI BAWAH KOTAK HARGA PAKET -->
+    <div class="forms-container reveal">
+      
+      <!-- DUKUNGAN INDEX LOGIN UNTUK PAGE (LOGIN & PENDAFTARAN) -->
+      <div class="auth-container">
+        <!-- Kiri: Form Login -->
+        <div class="auth-col login-section">
+          <h2>Masuk Akun</h2>
+          <p class="subtitle">Silakan login jika sudah memiliki akun</p>
+          
+          <form id="form-login">
+            <div class="form-group">
+              <label for="login-phone">Nomor WhatsApp / HP</label>
+              <input type="tel" id="login-phone" placeholder="Contoh: 08123456789" required>
+            </div>
+            <div class="form-group">
+              <label for="login-password">Kata Sandi</label>
+              <input type="password" id="login-password" placeholder="Masukkan kata sandi" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-login">Masuk ke Aplikasi</button>
+          </form>
+        </div>
+
+        <!-- Kanan: Form Pendaftaran -->
+        <div class="auth-col register-section">
+          <h2>Daftar Baru</h2>
+          <p class="subtitle">Buat akun baru untuk mulai mencatat keuangan</p>
+          
+          <form id="form-register">
+            <div class="form-group">
+              <label for="reg-name">Nama Lengkap</label>
+              <input type="text" id="reg-name" placeholder="Nama lengkap Anda" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-phone">Nomor WhatsApp / HP</label>
+              <input type="tel" id="reg-phone" placeholder="Contoh: 08123456789" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-password">Kata Sandi</label>
+              <input type="password" id="reg-password" placeholder="Buat kata sandi" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-register">Daftar Akun Baru</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- FORM 2: PERPANJANG PAKET -->
+      <div class="form-card">
+        <h3><i class="fa-solid fa-rotate" style="color:#0f766e;"></i> Perpanjang Paket Kamu</h3>
+        <p class="subtitle">Lengkapi data di sebelah kiri dan scan QRIS di sebelah kanan untuk memperpanjang paket.</p>
+        <form onsubmit="handleRenewSubmit(event)">
+          <div class="checkout-grid">
+            <div class="checkout-left">
+              <div class="form-group">
+                <label for="renewStoreName">Nama Toko</label>
+                <input id="renewStoreName" type="text" placeholder="Masukkan nama toko" required>
+              </div>
+              <div class="form-group">
+                <label for="renewOwnerName">Nama Pemilik Toko</label>
+                <input id="renewOwnerName" type="text" placeholder="Masukkan nama pemilik toko" required>
+              </div>
+              <div class="form-group">
+                <label for="renewPackageSelect">Pilih Nama Paket</label>
+                <select id="renewPackageSelect" onchange="updateRenewDuration()" required>
+                  <option value="">-- Pilih Paket --</option>
+                  <option value="Paket Gratis" data-duration="1 Bulan" data-price="Rp 0">Paket Gratis (1 Bulan)</option>
+                  <option value="Paket Reguler" data-duration="3 Bulan" data-price="Rp 20.000">Paket Reguler (3 Bulan)</option>
+                  <option value="Paket Best Seller" data-duration="6 Bulan" data-price="Rp 50.000">Paket Best Seller (6 Bulan)</option>
+                  <option value="Paket Bisnis" data-duration="12 Bulan" data-price="Rp 100.000">Paket Bisnis (12 Bulan)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="renewDuration">Durasi Waktu Paket</label>
+                <input id="renewDuration" type="text" placeholder="Otomatis menampilkan durasi" readonly>
+              </div>
+            </div>
+            <div class="checkout-right">
+              <label>Foto QRIS Pembayaran</label>
+              <div class="qris-note">1. Transfer sesuai nominal paket ke QRIS di bawah.<br>2. Klik Konfirmasi Pembayaran Agar Diproses Oleh Admin.</div>
+              <div class="qris-placeholder">
+                <img src="https://github.com/rekapinyu/rekapinyupage/blob/main/QRREKAPINYU.jpeg?raw=true" alt="QRIS Pembayaran">
+              </div>
+              <div id="renewAmountNote" class="qris-note" style="text-align:center;font-weight:700;">Total: -</div>
+              <button class="btn btn-primary buy-submit" type="submit">Konfirmasi Pembayaran</button>
+            </div>
+          </div>
         </form>
       </div>
-      <div class="auth-col register-section">
-        <div class="auth-heading"><span class="auth-icon register-icon"><i class="fa-solid fa-user-plus"></i></span><div><h2>Daftar Baru</h2><p class="subtitle">Buat akun untuk mulai mencatat</p></div></div>
-        <form id="form-register">
-          <div class="form-group"><label for="reg-name">Nama Lengkap</label><input type="text" id="reg-name" placeholder="Nama lengkap Anda" required></div>
-          <div class="form-group"><label for="reg-phone">Nomor WhatsApp / HP</label><input type="tel" id="reg-phone" placeholder="Contoh: 08123456789" required></div>
-          <div class="form-group"><label for="reg-password">Kata Sandi</label><input type="password" id="reg-password" placeholder="Buat kata sandi" required></div>
-          <button type="submit" class="btn btn-primary btn-register"><i class="fa-solid fa-user-check"></i> Daftar Akun Baru</button>
-        </form>
-      </div>
+
     </div>
   </div>
 </section>
