@@ -85,6 +85,7 @@ tr:hover{background:#f8fafc}
 .user-card-photo{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#e0f2fe;border:1px solid #bae6fd}
 .user-card-title{font-size:16px;font-weight:800;color:#0f172a}
 .user-card-sub{font-size:12px;color:#64748b}
+.user-card-password-value{font-size:12px;color:#475569;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px}
 .user-card-status{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
 .user-card-status.online{color:#15803d}.user-card-status.offline{color:#b91c1c}
 .user-card-password{width:100%;justify-content:center;background:#0284c7;color:#fff}
@@ -231,7 +232,7 @@ tr:hover{background:#f8fafc}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script>
 const firebaseConfig={apiKey:"AIzaSyAyzAV68m4BRtwmn0iu2vDplZaJ9r_uQVk",authDomain:"rekapinyu.firebaseapp.com",projectId:"rekapinyu",storageBucket:"rekapinyu.firebasestorage.app",messagingSenderId:"835450919713",appId:"1:835450919713:web:818f9f48c5b05330d67c60",databaseURL:"https://rekapinyu-default-rtdb.asia-southeast1.firebasedatabase.app"};
-let db=null,fs=null,currentFilter='ALL',transactions=[],users=[],notifications=[],activity=[];
+let db=null,fs=null,currentFilter='ALL',transactions=[],users=[],notifications=[],activity=[],presenceState={},presenceRefs={};
 const packageDays={"1 Bulan":30,"3 Bulan":90,"6 Bulan":180,"12 Bulan":365};
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
@@ -249,8 +250,10 @@ function setFilter(s,b){currentFilter=s;document.querySelectorAll('.filter-btn')
 function normalizeTransactions(raw){
   return Object.entries(raw||{}).map(([key,v])=>({...v,id:v.id||key,_key:key})).sort((a,b)=>new Date(b.timestamp||0)-new Date(a.timestamp||0));
 }
-function loadUsers(raw){users=Object.entries(raw||{}).map(([key,v])=>({...v,_key:key,phone:v.phone||key}));}
+function loadUsers(raw){users=Object.entries(raw||{}).map(([key,v])=>({...v,_key:key,phone:v.phone||key})); subscribeUserPresence();}
 function isUserOnline(user){
+  const presenceKey=user?.uid||user?._key;
+  if(Object.prototype.hasOwnProperty.call(presenceState,presenceKey))return presenceState[presenceKey];
   const value=user?.isOnline ?? user?.online ?? user?.status;
   if(typeof value==='boolean')return value;
   if(typeof value==='string'&&['online','aktif','active','sedang aktif'].includes(value.toLowerCase()))return true;
@@ -258,6 +261,42 @@ function isUserOnline(user){
   return lastSeen>0&&Date.now()-lastSeen<=120000;
 }
 function userPhoto(user){return user?.photoURL||user?.photo||user?.profilePhoto||user?.avatar||'';}
+function userEmail(user){return user?.email||user?.emailAddress||user?.loginEmail||'';}
+function userPassword(user){return user?.password||user?.userPassword||user?.plainPassword||'Tidak tersedia';}
+function setPresence(uid,value){
+  if(!uid)return;
+  presenceState[uid]=Boolean(value);
+  renderStats();
+  renderUsers();
+}
+function subscribeUserPresence(){
+  if(!db)return;
+  Object.values(presenceRefs).forEach(ref=>ref.off());
+  presenceRefs={};
+  users.forEach(user=>{
+    const uid=user.uid||user._key;
+    if(!uid)return;
+    const ref=db.ref('presence/'+uid);
+    presenceRefs[uid]=ref;
+    ref.on('value',snap=>{
+      if(!snap.exists()){
+        delete presenceState[uid];
+        renderStats();
+        renderUsers();
+        return;
+      }
+      const data=snap.val();
+      setPresence(uid,Boolean(data===true||data?.online===true||data?.isOnline===true||data?.state==='online'));
+    });
+  });
+}
+function changeUserPassword(uid){
+  const user=users.find(item=>(item.uid||item._key)===uid);
+  const email=userEmail(user);
+  if(!email){toast('Email pengguna tidak tersedia untuk reset password.');return;}
+  if(!adminAuth){toast('Layanan autentikasi belum siap.');return;}
+  adminAuth.sendPasswordResetEmail(email).then(()=>toast('Link ganti password dikirim ke email pengguna.')).catch(error=>{console.error('Reset password pengguna:',error);toast('Gagal mengirim link ganti password.');});
+}
 async function loadFirestoreUsers(){
   if(!fs)return;
   try{
@@ -293,9 +332,9 @@ function renderUsers(){
   const grid=document.getElementById('activeUsersGrid');
   if(!list.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1">Belum ada pengguna.</div>';return;}
   grid.innerHTML=list.map(x=>{
-    const online=isUserOnline(x),photo=userPhoto(x),storeName=x.storeName||x.shopName||x.toko||x.ownerName||x.name||'-',phone=x.phone||x.phoneNumber||'-';
+    const online=isUserOnline(x),photo=userPhoto(x),storeName=x.storeName||x.shopName||x.toko||x.ownerName||x.name||'-',phone=x.phone||x.phoneNumber||'-',password=userPassword(x),uid=x.uid||x._key;
     const profile=photo?`<img class="user-card-photo" src="${esc(photo)}" alt="Foto profil ${esc(storeName)}">`:'<div class="user-card-photo" style="display:flex;align-items:center;justify-content:center;color:#0284c7"><i class="fa-solid fa-user"></i></div>';
-    return `<div class="user-card"><div class="user-card-profile">${profile}<div><div class="user-card-title">${esc(storeName)}</div><div class="user-card-sub"><i class="fa-solid fa-phone"></i> ${esc(phone)}</div></div></div><div class="user-card-status ${online?'online':'offline'}"><i class="fa-solid fa-circle"></i> Status: ${online?'Sedang Aktif':'Tidak Aktif'}</div><button class="btn-action user-card-password" type="button"><i class="fa-solid fa-key"></i> Ganti Password</button></div>`;
+    return `<div class="user-card"><div class="user-card-profile">${profile}<div><div class="user-card-title">${esc(storeName)}</div><div class="user-card-sub"><i class="fa-solid fa-phone"></i> ${esc(phone)}</div><div class="user-card-password-value"><i class="fa-solid fa-lock"></i> Password: ${esc(password)}</div></div></div><div class="user-card-status ${online?'online':'offline'}"><i class="fa-solid fa-circle"></i> Status: ${online?'Sedang Aktif':'Tidak Aktif'}</div><button class="btn-action user-card-password" type="button" onclick="changeUserPassword('${esc(uid)}')"><i class="fa-solid fa-key"></i> Ganti Password</button></div>`;
   }).join('');
 }
 function renderLatest(){
