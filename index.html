@@ -152,9 +152,10 @@ header{background:#fff;border-bottom-color:#e6edf5;box-shadow:0 4px 24px #17385e
 @media(max-width:560px){
   .hero{padding:52px 0 78px}
   .hero-grid{gap:42px}
-  .person-stage{height:390px}
+  .hero-visual{width:100%;overflow:visible}
+  .person-stage{width:100%;height:clamp(300px,105vw,390px);overflow:visible}
   .person-backdrop{width:290px;height:290px;top:30px;right:3%}
-  .person-photo{height:370px;width:310px}
+  .person-photo{width:min(82vw,310px);height:auto;max-height:100%;object-fit:contain;object-position:center bottom;margin:0 auto}
   .person-stat-top{top:28px;left:0}
   .person-stage .glass{right:0;bottom:20px}
 }
