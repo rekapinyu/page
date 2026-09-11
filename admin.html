@@ -381,9 +381,8 @@ let isInitialLoad = true;
 
 function startFirebase(){
   try{
-    if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
-    db=firebase.database();
-    fs=firebase.firestore();
+    db=adminAuthApp.database();
+    fs=adminAuthApp.firestore();
 
     document.getElementById('firebaseState').innerHTML='<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> Firebase terhubung';
     document.getElementById('settingsFirebase').textContent='Terhubung ke Firebase Realtime Database + Firestore';
