@@ -68,6 +68,14 @@
   .auth-col.login-section { border-right: none; border-bottom: 1px solid #e0e0e0; }
 }
 </style>
+<style>
+@media(max-width:560px){
+  header .nav{width:92%;height:68px}
+  header .navlinks{margin-left:auto;gap:0}
+  header .navlinks>a:not(.btn-primary){display:none}
+  header .navlinks>.btn-primary{display:inline-flex;padding:10px 12px;font-size:12px;white-space:nowrap}
+}
+</style>
 </head>
 <body>
 <header><div class="container nav"><a class="brand" href="#"><span class="brand-mark"><i class="fa-solid fa-chart-line"></i></span>REKAPINYU</a><nav class="navlinks"><a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#paket">Paket</a><a href="#tentang">Tentang</a><a class="btn btn-primary" href="https://rekapinyu.github.io/"><i class="fa-solid fa-right-to-bracket"></i> Masuk / Daftar</a></nav></div></header>
