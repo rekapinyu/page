@@ -462,15 +462,33 @@ function startFirebase(){
 }
 
 if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
-const adminAuth = firebase.auth();
+const adminAuthApp=firebase.apps.find(app=>app.name==='superadminAuth')||firebase.initializeApp(firebaseConfig,'superadminAuth');
+const adminAuth=adminAuthApp.auth();
+adminAuth.setPersistence(firebase.auth.Auth.Persistence.NONE).catch(error=>console.warn('Persistence Superadmin:',error));
 
 function showAdminAuthError(message){
   const el=document.getElementById('adminAuthError');
   if(el){el.textContent=message;el.style.display='block';}
 }
-let superadminStarted=false;
-function startSuperadminAfterAuth(){
-  if(superadminStarted)return;
+let superadminStarted=false,superadminAuthChecking=false;
+async function startSuperadminAfterAuth(user){
+  if(superadminStarted||superadminAuthChecking||!user)return;
+  superadminAuthChecking=true;
+  try{
+    const token=await user.getIdTokenResult(true),claims=token.claims||{};
+    if(claims.admin!==true&&claims.superadmin!==true){
+      showAdminAuthError('Akun ini bukan akun Superadmin. Akses ditolak.');
+      await adminAuth.signOut();
+      return;
+    }
+  }catch(error){
+    console.error('Validasi akses Superadmin:',error);
+    showAdminAuthError('Akses Superadmin tidak dapat diverifikasi.');
+    await adminAuth.signOut();
+    return;
+  }finally{
+    superadminAuthChecking=false;
+  }
   superadminStarted=true;
   const overlay=document.getElementById('adminAuthOverlay');
   if(overlay)overlay.style.display='none';
@@ -484,7 +502,7 @@ document.getElementById('adminLoginBtn')?.addEventListener('click',async()=>{
   const btn=document.getElementById('adminLoginBtn'); btn.disabled=true; btn.textContent='Memproses...';
   try{
     await adminAuth.signInWithEmailAndPassword(email,password);
-    startSuperadminAfterAuth();
+    await startSuperadminAfterAuth(adminAuth.currentUser);
   }catch(e){
     console.error('Login Superadmin:',e);
     showAdminAuthError(e?.message||'Login Superadmin gagal.');
@@ -492,7 +510,7 @@ document.getElementById('adminLoginBtn')?.addEventListener('click',async()=>{
   }
 });
 adminAuth.onAuthStateChanged(user=>{
-  if(user) startSuperadminAfterAuth();
+  if(user) startSuperadminAfterAuth(user);
 });
 </script>
 </body>
