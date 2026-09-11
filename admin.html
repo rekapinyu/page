@@ -250,7 +250,16 @@ function setFilter(s,b){currentFilter=s;document.querySelectorAll('.filter-btn')
 function normalizeTransactions(raw){
   return Object.entries(raw||{}).map(([key,v])=>({...v,id:v.id||key,_key:key})).sort((a,b)=>new Date(b.timestamp||0)-new Date(a.timestamp||0));
 }
-function loadUsers(raw){users=Object.entries(raw||{}).map(([key,v])=>({...v,_key:key,phone:v.phone||key})); subscribeUserPresence();}
+function normalizeUsers(raw){return Object.entries(raw||{}).map(([key,v])=>({...v,_key:key,uid:v.uid||v.userId||key,phone:v.phone||v.phoneNumber||key}));}
+function loadUsers(raw){users=normalizeUsers(raw); subscribeUserPresence();}
+function mergeUsers(raw){
+  const incoming=normalizeUsers(raw),merged=[...users];
+  incoming.forEach(user=>{
+    const index=merged.findIndex(item=>(user.uid&&item.uid===user.uid)||(user.email&&item.email===user.email)||(user.phone&&item.phone===user.phone));
+    if(index<0)merged.push(user);else merged[index]={...merged[index],...user};
+  });
+  users=merged; subscribeUserPresence(); renderStats(); renderUsers();
+}
 function isUserOnline(user){
   const presenceKey=user?.uid||user?._key;
   if(Object.prototype.hasOwnProperty.call(presenceState,presenceKey))return presenceState[presenceKey];
@@ -262,7 +271,7 @@ function isUserOnline(user){
 }
 function userPhoto(user){return user?.photoURL||user?.photo||user?.profilePhoto||user?.avatar||'';}
 function userEmail(user){return user?.email||user?.emailAddress||user?.loginEmail||'';}
-function userPassword(user){return user?.password||user?.userPassword||user?.plainPassword||'Tidak tersedia';}
+function userPassword(user){return user?.password||user?.userPassword||user?.plainPassword||user?.passwordText||user?.pass||'Tidak tersedia';}
 function setPresence(uid,value){
   if(!uid)return;
   presenceState[uid]=Boolean(value);
@@ -271,23 +280,20 @@ function setPresence(uid,value){
 }
 function subscribeUserPresence(){
   if(!db)return;
-  Object.values(presenceRefs).forEach(ref=>ref.off());
+  Object.values(presenceRefs).flat().forEach(ref=>ref.off());
   presenceRefs={};
   users.forEach(user=>{
     const uid=user.uid||user._key;
     if(!uid)return;
-    const ref=db.ref('presence/'+uid);
-    presenceRefs[uid]=ref;
-    ref.on('value',snap=>{
-      if(!snap.exists()){
-        delete presenceState[uid];
-        renderStats();
-        renderUsers();
-        return;
-      }
-      const data=snap.val();
-      setPresence(uid,Boolean(data===true||data?.online===true||data?.isOnline===true||data?.state==='online'));
-    });
+    const refs=[db.ref('presence/'+uid),db.ref('users/'+uid)];
+    presenceRefs[uid]=refs;
+    refs.forEach(ref=>ref.on('value',snap=>{
+      if(!snap.exists())return;
+      const data=snap.val(),value=data===true?true:data===false?false:data?.online??data?.isOnline??data?.status;
+      if(typeof value==='boolean')setPresence(uid,value);
+      else if(typeof value==='string'&&['online','aktif','active','sedang aktif'].includes(value.toLowerCase()))setPresence(uid,true);
+      else if(typeof value==='string'&&['offline','tidak aktif','inactive'].includes(value.toLowerCase()))setPresence(uid,false);
+    }));
   });
 }
 function changeUserPassword(uid){
@@ -382,6 +388,7 @@ function startFirebase(){
     document.getElementById('settingsFirebase').textContent='Terhubung ke Firebase Realtime Database + Firestore';
 
     const txRef=db.ref('rekapinyu_transactions');
+    db.ref('users').on('value',snap=>mergeUsers(snap.val()||{}),err=>console.warn('Realtime pengguna:',err));
 
     // Menerima semua data transaksi dan memfilter mana yang butuh konfirmasi
     txRef.on('value', snap => {
